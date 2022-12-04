@@ -16,12 +16,16 @@ namespace RecipeBook.Repositories.Implementation
 
         public async Task<IEnumerable<Ingredient>> GetAllIngredients_Repos()
         {
-            return await dataBaseContext.Ingredients.ToListAsync();
+            return await dataBaseContext.Ingredients
+                .Include(x => x.Recipies)
+                .ToListAsync();
         }
 
         public async Task<Ingredient> GetIngredient_Repos(Guid id)
         {
-            return await dataBaseContext.Ingredients.FirstOrDefaultAsync(ingredient => ingredient.Id == id);
+            return await dataBaseContext.Ingredients
+                .Include(x => x.Recipies)
+                .FirstOrDefaultAsync(ingredient => ingredient.Id == id);
         }
 
         public async Task<Ingredient> AddIngredient_Repos(Ingredient ingredient)

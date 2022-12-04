@@ -17,12 +17,16 @@ namespace RecipeBook.Repositories.Implementation
 
         public async Task<IEnumerable<Recipe>> GetAllRecipies_Repos()
         {
-            return await dataBaseContext.Recipies.ToListAsync();
+            return await dataBaseContext.Recipies
+                .Include(x => x.Ingredients)
+                .ToListAsync();
         }
 
         public async Task<Recipe> GetRecipe_Repos(Guid id)
         {
-            return await dataBaseContext.Recipies.FirstOrDefaultAsync(recipe => recipe.Id == id);
+            return await dataBaseContext.Recipies
+                .Include(x => x.Ingredients)
+                .FirstOrDefaultAsync(recipe => recipe.Id == id);
         }
 
         public async Task<Recipe> AddRecipe_Repos(Recipe recipe)

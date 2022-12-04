@@ -3,6 +3,8 @@ using RecipeBook.Repositories.Interface;
 
 namespace RecipeBook.Controllers
 {
+    [ApiController]
+    [Route("[controller]/[action]")]
     public class IngredientController : Controller
     {
         private readonly IIngredientRepository repository;
@@ -29,7 +31,14 @@ namespace RecipeBook.Controllers
                 var ingredientDto = new Models.Dto.Ingredient()
                 {
                     Id = ingredient.Id,
-                    Name = ingredient.Name
+                    Name = ingredient.Name,
+                    Quantity = ingredient.Quantity,
+                    Recipies = ingredient.Recipies.Select(
+                         q => new Models.Dto.Recipe()
+                         {
+                             Id = q.Id,
+                             Title = q.Title,
+                         }).ToList()
                 };
 
                 ingredientsDto.Add(ingredientDto);
@@ -40,7 +49,7 @@ namespace RecipeBook.Controllers
 
         #endregion
 
-        #region Get Recipe
+        #region Get Ingredient
 
         [HttpGet]
         [Route("{id:guid}")]
@@ -53,7 +62,13 @@ namespace RecipeBook.Controllers
             {
                 Id = response.Id,
                 Name = response.Name,
-                Quantity = response.Quantity
+                Quantity = response.Quantity,
+                Recipies = response.Recipies.Select(
+                         q => new Models.Dto.Recipe()
+                         {
+                             Id = q.Id,
+                             Title = q.Title,
+                         }).ToList()
             };
 
             return Ok(ingredientDto);
@@ -61,7 +76,7 @@ namespace RecipeBook.Controllers
 
         #endregion
 
-        #region Add Recipe
+        #region Add Ingredient
 
         [HttpPost]
         public async Task<IActionResult> AddIngredient(Models.Dto.Requests.Ingredient.AddIngredientRequest addIngredientRequest)
@@ -85,7 +100,7 @@ namespace RecipeBook.Controllers
 
         #endregion
 
-        #region Delete Recipe
+        #region Delete Ingredient
 
         [HttpDelete]
         [Route("{id:guid}")]
@@ -96,7 +111,13 @@ namespace RecipeBook.Controllers
             {
                 Id = response.Id,
                 Quantity = response.Quantity,
-                Name = response.Name
+                Name = response.Name,
+                Recipies = response.Recipies.Select(
+                         q => new Models.Dto.Recipe()
+                         {
+                             Id = q.Id,
+                             Title = q.Title,
+                         }).ToList()
             };
 
             return Ok(ingredientDto);
@@ -104,7 +125,7 @@ namespace RecipeBook.Controllers
 
         #endregion
 
-        #region Update Recipe
+        #region Update Ingredient
 
         [HttpPut]
         [Route("{id:guid}")]
@@ -126,7 +147,13 @@ namespace RecipeBook.Controllers
             {
                 Id = response.Id,
                 Quantity = response.Quantity,
-                Name = response.Name
+                Name = response.Name,
+                Recipies = response.Recipies.Select(
+                         q => new Models.Dto.Recipe()
+                         {
+                             Id = q.Id,
+                             Title = q.Title,
+                         }).ToList()
             };
 
             return Ok(ingredientDto);

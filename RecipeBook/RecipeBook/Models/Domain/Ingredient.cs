@@ -1,4 +1,7 @@
-﻿namespace RecipeBook.Models.Domain
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+
+namespace RecipeBook.Models.Domain
 {
     public class Ingredient
     {
@@ -7,6 +10,6 @@
         public string Name { get; set; }
 
         //Navigation Property
-        public IEnumerable<Recipe> Recipe { get; set; }
+        public IEnumerable<Recipe> Recipies { get; set; }
     }
 }

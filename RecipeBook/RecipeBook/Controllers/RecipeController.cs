@@ -1,11 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using RecipeBook.Models.Domain;
+using RecipeBook.Models.Dto;
 using RecipeBook.Repositories.Interface;
-using System;
+using System.Collections.Generic;
+using System.Reflection.Metadata.Ecma335;
 
 namespace RecipeBook.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("[controller]/[action]")]
     public class RecipeController : Controller
     {
         private readonly IRecipeRepository repository;
@@ -37,7 +40,14 @@ namespace RecipeBook.Controllers
                     Steps = recipe.Steps,
                     Portions = recipe.Portions,
                     Duration = recipe.Duration,
-                    Difficulty = recipe.Difficulty
+                    Difficulty = recipe.Difficulty,
+                    Ingredients = recipe.Ingredients.Select(
+                         q => new Models.Dto.Ingredient()
+                         {
+                             Id = q.Id,
+                             Name = q.Name,
+                             Quantity = q.Quantity
+                         }).ToList()
                 };
 
                 recipiesDto.Add(recipeDto);
@@ -65,7 +75,14 @@ namespace RecipeBook.Controllers
                 Steps = response.Steps,
                 Portions = response.Portions,
                 Duration = response.Duration,
-                Difficulty = response.Difficulty
+                Difficulty = response.Difficulty,
+                Ingredients = response.Ingredients.Select(
+                         q => new Models.Dto.Ingredient()
+                         {
+                             Id = q.Id,
+                             Name = q.Name,
+                             Quantity = q.Quantity
+                         }).ToList()
             };
 
             return Ok(recipeDto);
@@ -76,7 +93,7 @@ namespace RecipeBook.Controllers
         #region Add Recipe
 
         [HttpPost]
-        public async Task<IActionResult> AddRecipe(Models.Dto.Requests.Recipe.AddIngredientRequest addRecipeRequest)
+        public async Task<IActionResult> AddRecipe(Models.Dto.Requests.Recipe.AddRecipeRequest addRecipeRequest)
         {
             var request = new Models.Domain.Recipe()
             {
@@ -120,7 +137,14 @@ namespace RecipeBook.Controllers
                 Steps = response.Steps,
                 Portions = response.Portions,
                 Duration = response.Duration,
-                Difficulty = response.Difficulty
+                Difficulty = response.Difficulty,
+                Ingredients = response.Ingredients.Select(
+                         q => new Models.Dto.Ingredient()
+                         {
+                             Id = q.Id,
+                             Name = q.Name,
+                             Quantity = q.Quantity
+                         }).ToList()
             };
 
             return Ok(recipeDto);
@@ -132,7 +156,7 @@ namespace RecipeBook.Controllers
 
         [HttpPut]
         [Route("{id:guid}")]
-        public async Task<IActionResult> UpdateRecipe([FromRoute] Guid id, [FromBody] Models.Dto.Requests.Recipe.UpdateIngredientRequest updateRecipeRequest)
+        public async Task<IActionResult> UpdateRecipe([FromRoute] Guid id, [FromBody] Models.Dto.Requests.Recipe.UpdateRecipeRequest updateRecipeRequest)
         {
             var request = new Models.Domain.Recipe()
             {
@@ -158,7 +182,14 @@ namespace RecipeBook.Controllers
                 Steps = response.Steps,
                 Portions = response.Portions,
                 Duration = response.Duration,
-                Difficulty = response.Difficulty
+                Difficulty = response.Difficulty,
+                Ingredients = response.Ingredients.Select(
+                         q => new Models.Dto.Ingredient()
+                         {
+                             Id = q.Id,
+                             Name = q.Name,
+                             Quantity = q.Quantity
+                         }).ToList()
             };
 
             return Ok(recipeDto);
