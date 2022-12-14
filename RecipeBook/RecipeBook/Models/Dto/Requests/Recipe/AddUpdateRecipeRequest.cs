@@ -1,6 +1,8 @@
-﻿namespace RecipeBook.Models.Dto.Requests.Recipe
+﻿using System.Text.Json.Serialization;
+
+namespace RecipeBook.Models.Dto.Requests.Recipe
 {
-    public class AddRecipeRequest
+    public class AddUpdateRecipeRequest
     {
         public string Title { get; set; }
         public string Description { get; set; }
@@ -8,5 +10,8 @@
         public int Portions { get; set; }
         public int Duration { get; set; }
         public Enums.DomainEnums.Difficulty Difficulty { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public IEnumerable<Ingredient.AddUpdateIngredientRequest> Ingredients { get; set; }
     }
 }

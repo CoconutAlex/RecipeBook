@@ -10,6 +10,8 @@ namespace RecipeBook.Repositories.Implementation
     {
         private readonly DataBaseContext dataBaseContext;
 
+        #region Recipies
+
         public RecipeRepository(DataBaseContext dataBaseContext)
         {
             this.dataBaseContext = dataBaseContext;
@@ -69,5 +71,7 @@ namespace RecipeBook.Repositories.Implementation
             return updatedRecipe;
 
         }
+
+        #endregion
     }
 }

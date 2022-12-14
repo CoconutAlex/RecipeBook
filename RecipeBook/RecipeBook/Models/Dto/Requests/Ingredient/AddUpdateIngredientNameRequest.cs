@@ -1,8 +1,7 @@
 ﻿namespace RecipeBook.Models.Dto.Requests.Ingredient
 {
-    public class AddIngredientRequest
+    public class AddUpdateIngredientNameRequest
     {
-        public string Quantity { get; set; }
         public string Name { get; set; }
     }
 }

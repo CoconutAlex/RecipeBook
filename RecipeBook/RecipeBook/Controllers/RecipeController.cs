@@ -45,8 +45,16 @@ namespace RecipeBook.Controllers
                          q => new Models.Dto.Ingredient()
                          {
                              Id = q.Id,
-                             Name = q.Name,
-                             Quantity = q.Quantity
+                             IngredientName = new Models.Dto.IngredientName()
+                             {
+                                 Id = q.IngredientName.Id,
+                                 Name = q.IngredientName.Name
+                             },
+                             IngredientQuantity = new Models.Dto.IngredientQuantity()
+                             {
+                                 Id = q.IngredientQuantity.Id,
+                                 Quantity = q.IngredientQuantity.Quantity
+                             }
                          }).ToList()
                 };
 
@@ -80,8 +88,16 @@ namespace RecipeBook.Controllers
                          q => new Models.Dto.Ingredient()
                          {
                              Id = q.Id,
-                             Name = q.Name,
-                             Quantity = q.Quantity
+                             IngredientName = new Models.Dto.IngredientName()
+                             {
+                                 Id = q.IngredientName.Id,
+                                 Name = q.IngredientName.Name
+                             },
+                             IngredientQuantity = new Models.Dto.IngredientQuantity()
+                             {
+                                 Id = q.IngredientQuantity.Id,
+                                 Quantity = q.IngredientQuantity.Quantity
+                             }
                          }).ToList()
             };
 
@@ -93,7 +109,7 @@ namespace RecipeBook.Controllers
         #region Add Recipe
 
         [HttpPost]
-        public async Task<IActionResult> AddRecipe(Models.Dto.Requests.Recipe.AddRecipeRequest addRecipeRequest)
+        public async Task<IActionResult> AddRecipe(Models.Dto.Requests.Recipe.AddUpdateRecipeRequest addRecipeRequest)
         {
             var request = new Models.Domain.Recipe()
             {
@@ -142,8 +158,16 @@ namespace RecipeBook.Controllers
                          q => new Models.Dto.Ingredient()
                          {
                              Id = q.Id,
-                             Name = q.Name,
-                             Quantity = q.Quantity
+                             IngredientName = new Models.Dto.IngredientName()
+                             {
+                                 Id = q.IngredientName.Id,
+                                 Name = q.IngredientName.Name
+                             },
+                             IngredientQuantity = new Models.Dto.IngredientQuantity()
+                             {
+                                 Id = q.IngredientQuantity.Id,
+                                 Quantity = q.IngredientQuantity.Quantity
+                             }
                          }).ToList()
             };
 
@@ -156,7 +180,7 @@ namespace RecipeBook.Controllers
 
         [HttpPut]
         [Route("{id:guid}")]
-        public async Task<IActionResult> UpdateRecipe([FromRoute] Guid id, [FromBody] Models.Dto.Requests.Recipe.UpdateRecipeRequest updateRecipeRequest)
+        public async Task<IActionResult> UpdateRecipe([FromRoute] Guid id, [FromBody] Models.Dto.Requests.Recipe.AddUpdateRecipeRequest updateRecipeRequest)
         {
             var request = new Models.Domain.Recipe()
             {
@@ -187,8 +211,16 @@ namespace RecipeBook.Controllers
                          q => new Models.Dto.Ingredient()
                          {
                              Id = q.Id,
-                             Name = q.Name,
-                             Quantity = q.Quantity
+                             IngredientName = new Models.Dto.IngredientName()
+                             {
+                                 Id = q.IngredientName.Id,
+                                 Name = q.IngredientName.Name
+                             },
+                             IngredientQuantity = new Models.Dto.IngredientQuantity()
+                             {
+                                 Id = q.IngredientQuantity.Id,
+                                 Quantity = q.IngredientQuantity.Quantity
+                             }
                          }).ToList()
             };
 
