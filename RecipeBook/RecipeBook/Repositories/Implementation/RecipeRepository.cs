@@ -29,8 +29,8 @@ namespace RecipeBook.Repositories.Implementation
         public async Task<Recipe> GetRecipe_Repos(Guid id)
         {
             return await dataBaseContext.Recipies
-                .Include(x => x.Ingredients).ThenInclude(y => y.IngredientName)
-                .Include(x => x.Ingredients).ThenInclude(y => y.IngredientQuantity)
+                .Include(x => x.Ingredients).ThenInclude(y => y.IngredientName).AsNoTracking()
+                .Include(x => x.Ingredients).ThenInclude(y => y.IngredientQuantity).AsNoTracking()
                 .FirstOrDefaultAsync(recipe => recipe.Id == id);
         }
 
@@ -48,8 +48,9 @@ namespace RecipeBook.Repositories.Implementation
                 Ingredients = addRecipeRequest.Ingredients.Select(
                          q => new Ingredient
                          {
-                             IngredientName = dataBaseContext.IngredientsNames.FirstOrDefault(ingredientName => ingredientName.Id == q.IngredientNameId),
-                             IngredientQuantity = dataBaseContext.IngredientsQuantities.FirstOrDefault(ingredientQuantity => ingredientQuantity.Id == q.IngredientQuantityId)
+                             Id = q.IngredientId,
+                             IngredientName = dataBaseContext.IngredientsNames.FirstOrDefault(ingredientName => ingredientName.Id == dataBaseContext.Ingredients.FirstOrDefault(ingredient => ingredient.Id == q.IngredientId).IngredientName.Id),
+                             IngredientQuantity = dataBaseContext.IngredientsQuantities.FirstOrDefault(ingredientQuantity => ingredientQuantity.Id == dataBaseContext.Ingredients.FirstOrDefault(ingredient => ingredient.Id == q.IngredientId).IngredientQuantity.Id)
                          }).ToList()
             };
 
@@ -84,12 +85,12 @@ namespace RecipeBook.Repositories.Implementation
             updatedRecipe.Duration = updateRecipeRequest.Duration;
             updatedRecipe.Difficulty = updateRecipeRequest.Difficulty;
             updatedRecipe.Ingredients = updateRecipeRequest.Ingredients.Select(
-                         q => new Ingredient
-                         {
-
-                             IngredientName = dataBaseContext.IngredientsNames.FirstOrDefault(ingredientName => ingredientName.Id == q.IngredientNameId),
-                             IngredientQuantity = dataBaseContext.IngredientsQuantities.FirstOrDefault(ingredientQuantity => ingredientQuantity.Id == q.IngredientQuantityId)
-                         }).ToList();
+                        q => new Ingredient
+                        {
+                            Id = q.IngredientId,
+                            IngredientName = dataBaseContext.IngredientsNames.FirstOrDefault(ingredientName => ingredientName.Id == dataBaseContext.Ingredients.FirstOrDefault(ingredient => ingredient.Id == q.IngredientId).IngredientName.Id),
+                            IngredientQuantity = dataBaseContext.IngredientsQuantities.FirstOrDefault(ingredientQuantity => ingredientQuantity.Id == dataBaseContext.Ingredients.FirstOrDefault(ingredient => ingredient.Id == q.IngredientId).IngredientQuantity.Id)
+                        }).ToList();
 
             await dataBaseContext.SaveChangesAsync();
 

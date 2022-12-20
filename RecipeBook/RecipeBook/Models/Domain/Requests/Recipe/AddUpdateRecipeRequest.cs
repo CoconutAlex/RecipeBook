@@ -8,6 +8,6 @@
         public int Portions { get; set; }
         public int Duration { get; set; }
         public Enums.DomainEnums.Difficulty Difficulty { get; set; }
-        public IEnumerable<Ingredient.AddUpdateIngredientRequest> Ingredients { get; set; }
+        public IEnumerable<Models.Domain.Requests.Recipe.AddIngredientForRecipeRequest> Ingredients { get; set; }
     }
 }

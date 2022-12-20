@@ -120,10 +120,9 @@ namespace RecipeBook.Controllers
                 Duration = addRecipeRequest.Duration,
                 Difficulty = addRecipeRequest.Difficulty,
                 Ingredients = addRecipeRequest.Ingredients.Select(
-                         q => new Models.Domain.Requests.Ingredient.AddUpdateIngredientRequest()
+                         q => new Models.Domain.Requests.Recipe.AddIngredientForRecipeRequest()
                          {
-                             IngredientNameId = q.IngredientNameId,
-                             IngredientQuantityId = q.IngredientQuantityId
+                             IngredientId = q.IngredientId
                          }).ToList()
             };
 
@@ -197,10 +196,9 @@ namespace RecipeBook.Controllers
                 Duration = updateRecipeRequest.Duration,
                 Difficulty = updateRecipeRequest.Difficulty,
                 Ingredients = updateRecipeRequest.Ingredients.Select(
-                         q => new Models.Domain.Requests.Ingredient.AddUpdateIngredientRequest()
+                         q => new Models.Domain.Requests.Recipe.AddIngredientForRecipeRequest()
                          {
-                             IngredientNameId = q.IngredientNameId,
-                             IngredientQuantityId = q.IngredientQuantityId
+                             IngredientId = q.IngredientId
                          }).ToList()
             };
 

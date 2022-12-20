@@ -12,6 +12,6 @@ namespace RecipeBook.Models.Dto.Requests.Recipe
         public Enums.DomainEnums.Difficulty Difficulty { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public IEnumerable<Ingredient.AddUpdateIngredientRequest> Ingredients { get; set; }
+        public IEnumerable<Models.Dto.Requests.Recipe.AddIngredientForRecipeRequest> Ingredients { get; set; }
     }
 }
