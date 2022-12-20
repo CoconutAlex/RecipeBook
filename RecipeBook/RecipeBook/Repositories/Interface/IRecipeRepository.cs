@@ -1,4 +1,5 @@
 ﻿using RecipeBook.Models.Domain;
+using RecipeBook.Models.Domain.Requests.Recipe;
 
 namespace RecipeBook.Repositories.Interface
 {
@@ -8,9 +9,9 @@ namespace RecipeBook.Repositories.Interface
 
         Task<IEnumerable<Recipe>> GetAllRecipies_Repos();
         Task<Recipe> GetRecipe_Repos(Guid id);
-        Task<Recipe> AddRecipe_Repos(Recipe recipe);
+        Task<Recipe> AddRecipe_Repos(AddUpdateRecipeRequest addRecipeRequest);
         Task<Recipe> DeleteRecipe_Repos(Guid id);
-        Task<Recipe> UpdateRecipe_Repos(Guid id, Recipe recipe);
+        Task<Recipe> UpdateRecipe_Repos(Guid id, AddUpdateRecipeRequest updateRecipeRequest);
 
         #endregion
     }

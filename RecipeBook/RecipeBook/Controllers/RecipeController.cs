@@ -111,14 +111,20 @@ namespace RecipeBook.Controllers
         [HttpPost]
         public async Task<IActionResult> AddRecipe(Models.Dto.Requests.Recipe.AddUpdateRecipeRequest addRecipeRequest)
         {
-            var request = new Models.Domain.Recipe()
+            var request = new Models.Domain.Requests.Recipe.AddUpdateRecipeRequest()
             {
                 Title = addRecipeRequest.Title,
                 Description = addRecipeRequest.Description,
                 Steps = addRecipeRequest.Steps,
                 Portions = addRecipeRequest.Portions,
                 Duration = addRecipeRequest.Duration,
-                Difficulty = addRecipeRequest.Difficulty
+                Difficulty = addRecipeRequest.Difficulty,
+                Ingredients = addRecipeRequest.Ingredients.Select(
+                         q => new Models.Domain.Requests.Ingredient.AddUpdateIngredientRequest()
+                         {
+                             IngredientNameId = q.IngredientNameId,
+                             IngredientQuantityId = q.IngredientQuantityId
+                         }).ToList()
             };
 
             var response = await repository.AddRecipe_Repos(request);
@@ -182,14 +188,20 @@ namespace RecipeBook.Controllers
         [Route("{id:guid}")]
         public async Task<IActionResult> UpdateRecipe([FromRoute] Guid id, [FromBody] Models.Dto.Requests.Recipe.AddUpdateRecipeRequest updateRecipeRequest)
         {
-            var request = new Models.Domain.Recipe()
+            var request = new Models.Domain.Requests.Recipe.AddUpdateRecipeRequest()
             {
                 Title = updateRecipeRequest.Title,
                 Description = updateRecipeRequest.Description,
                 Steps = updateRecipeRequest.Steps,
                 Portions = updateRecipeRequest.Portions,
                 Duration = updateRecipeRequest.Duration,
-                Difficulty = updateRecipeRequest.Difficulty
+                Difficulty = updateRecipeRequest.Difficulty,
+                Ingredients = updateRecipeRequest.Ingredients.Select(
+                         q => new Models.Domain.Requests.Ingredient.AddUpdateIngredientRequest()
+                         {
+                             IngredientNameId = q.IngredientNameId,
+                             IngredientQuantityId = q.IngredientQuantityId
+                         }).ToList()
             };
 
             var response = await repository.UpdateRecipe_Repos(id, request);
