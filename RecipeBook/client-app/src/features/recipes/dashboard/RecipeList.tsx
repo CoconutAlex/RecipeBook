@@ -4,23 +4,23 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { Button, Icon, Item, Segment } from 'semantic-ui-react';
 import { Difficulty, Recipe } from '../../../app/models/recipe';
 
-export default function RecipeList() {
+interface Props {
+    recipesList: Recipe[];
+}
+
+export default function RecipeList({ recipesList }: Props) {
     const navigate = useNavigate();
 
     const [recipes, setRecipes] = useState<Recipe[]>([]);
 
     useEffect(() => {
-        axios.get<Recipe[]>('http://localhost:5118/Recipe/GetAllRecipes')
-            .then(response => {
-                setRecipes(response.data);
-            })
-    }, [])
+        setRecipes(recipesList);
+    }, [recipesList])
 
     const DeleteRecipe = (id: string) => {
         axios.delete(`http://localhost:5118/Recipe/DeleteRecipe/${id}`)
             .then(response => {
                 const newRecipes = [...recipes];
-
                 var index = -1;
                 newRecipes.every((item) => {
                     index++;

@@ -6,10 +6,20 @@ import RecipeList from "./RecipeList";
 
 export default function RecipeDashboard() {
 
+    const [recipes, setRecipes] = useState<Recipe[]>([]);
+
+    useEffect(() => {
+        axios.get<Recipe[]>('http://localhost:5118/Recipe/GetAllRecipes')
+            .then(response => {
+                setRecipes(response.data);
+            })
+    }, [])
+
     return (
         <Grid>
             <Grid.Column width='16'>
-                <RecipeList />
+                {recipes &&
+                    <RecipeList recipesList={recipes} />}
             </Grid.Column>
         </Grid>
     )
