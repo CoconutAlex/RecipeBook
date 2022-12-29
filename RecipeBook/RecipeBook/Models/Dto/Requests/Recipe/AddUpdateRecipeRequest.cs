@@ -10,8 +10,9 @@ namespace RecipeBook.Models.Dto.Requests.Recipe
         public int Portions { get; set; }
         public int Duration { get; set; }
         public Enums.DomainEnums.Difficulty Difficulty { get; set; }
+        public string ImageName { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public IEnumerable<Models.Dto.Requests.Recipe.AddIngredientForRecipeRequest> Ingredients { get; set; }
+        public IEnumerable<AddIngredientForRecipeRequest> Ingredients { get; set; }
     }
 }

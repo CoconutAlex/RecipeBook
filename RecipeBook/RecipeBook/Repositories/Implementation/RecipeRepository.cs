@@ -11,16 +11,16 @@ namespace RecipeBook.Repositories.Implementation
     {
         private readonly DataBaseContext dataBaseContext;
 
-        #region Recipies
+        #region Recipes
 
         public RecipeRepository(DataBaseContext dataBaseContext)
         {
             this.dataBaseContext = dataBaseContext;
         }
 
-        public async Task<IEnumerable<Recipe>> GetAllRecipies_Repos()
+        public async Task<IEnumerable<Recipe>> GetAllRecipes_Repos()
         {
-            return await dataBaseContext.Recipies
+            return await dataBaseContext.Recipes
                 .Include(x => x.Ingredients).ThenInclude(y => y.IngredientName)
                 .Include(x => x.Ingredients).ThenInclude(y => y.IngredientQuantity)
                 .ToListAsync();
@@ -28,7 +28,7 @@ namespace RecipeBook.Repositories.Implementation
 
         public async Task<Recipe> GetRecipe_Repos(Guid id)
         {
-            return await dataBaseContext.Recipies
+            return await dataBaseContext.Recipes
                 .Include(x => x.Ingredients).ThenInclude(y => y.IngredientName).AsNoTracking()
                 .Include(x => x.Ingredients).ThenInclude(y => y.IngredientQuantity).AsNoTracking()
                 .FirstOrDefaultAsync(recipe => recipe.Id == id);
@@ -36,6 +36,17 @@ namespace RecipeBook.Repositories.Implementation
 
         public async Task<Recipe> AddRecipe_Repos(AddUpdateRecipeRequest addRecipeRequest)
         {
+            var tempIngredients = new List<Ingredient>();
+            foreach (var item in addRecipeRequest.Ingredients)
+            {
+                var newIngredient = new Ingredient()
+                {
+                    Id = item.IngredientId,
+                    IngredientName = dataBaseContext.IngredientsNames.FirstOrDefault(ingredientName => ingredientName.Id == dataBaseContext.Ingredients.FirstOrDefault(ingredient => ingredient.Id == item.IngredientId).IngredientName.Id),
+                    IngredientQuantity = dataBaseContext.IngredientsQuantities.FirstOrDefault(ingredientQuantity => ingredientQuantity.Id == dataBaseContext.Ingredients.FirstOrDefault(ingredient => ingredient.Id == item.IngredientId).IngredientQuantity.Id)
+                };
+            }
+
             var insertedRecipe = new Recipe()
             {
                 Id = Guid.NewGuid(),
@@ -45,16 +56,11 @@ namespace RecipeBook.Repositories.Implementation
                 Duration = addRecipeRequest.Duration,
                 Portions = addRecipeRequest.Portions,
                 Steps = addRecipeRequest.Steps,
-                Ingredients = addRecipeRequest.Ingredients.Select(
-                         q => new Ingredient
-                         {
-                             Id = q.IngredientId,
-                             IngredientName = dataBaseContext.IngredientsNames.FirstOrDefault(ingredientName => ingredientName.Id == dataBaseContext.Ingredients.FirstOrDefault(ingredient => ingredient.Id == q.IngredientId).IngredientName.Id),
-                             IngredientQuantity = dataBaseContext.IngredientsQuantities.FirstOrDefault(ingredientQuantity => ingredientQuantity.Id == dataBaseContext.Ingredients.FirstOrDefault(ingredient => ingredient.Id == q.IngredientId).IngredientQuantity.Id)
-                         }).ToList()
+                ImageName = addRecipeRequest.ImageName,
+                Ingredients = tempIngredients
             };
 
-            await dataBaseContext.Recipies.AddAsync(insertedRecipe);
+            await dataBaseContext.Recipes.AddAsync(insertedRecipe);
             await dataBaseContext.SaveChangesAsync();
 
             return insertedRecipe;
@@ -66,7 +72,7 @@ namespace RecipeBook.Repositories.Implementation
 
             if (deletedRecipe == null) return null;
 
-            dataBaseContext.Recipies.Remove(deletedRecipe);
+            dataBaseContext.Recipes.Remove(deletedRecipe);
             await dataBaseContext.SaveChangesAsync();
 
             return deletedRecipe;
@@ -84,6 +90,7 @@ namespace RecipeBook.Repositories.Implementation
             updatedRecipe.Portions = updateRecipeRequest.Portions;
             updatedRecipe.Duration = updateRecipeRequest.Duration;
             updatedRecipe.Difficulty = updateRecipeRequest.Difficulty;
+            updatedRecipe.ImageName = updateRecipeRequest.ImageName;
             updatedRecipe.Ingredients = updateRecipeRequest.Ingredients.Select(
                         q => new Ingredient
                         {

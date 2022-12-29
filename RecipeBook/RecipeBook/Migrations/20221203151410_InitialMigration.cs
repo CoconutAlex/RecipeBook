@@ -23,7 +23,7 @@ namespace RecipeBook.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Recipies",
+                name: "Recipes",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -36,7 +36,7 @@ namespace RecipeBook.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Recipies", x => x.Id);
+                    table.PrimaryKey("PK_Recipes", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -56,9 +56,9 @@ namespace RecipeBook.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_IngredientRecipe_Recipies_RecipeId",
+                        name: "FK_IngredientRecipe_Recipes_RecipeId",
                         column: x => x.RecipeId,
-                        principalTable: "Recipies",
+                        principalTable: "Recipes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -78,7 +78,7 @@ namespace RecipeBook.Migrations
                 name: "Ingredients");
 
             migrationBuilder.DropTable(
-                name: "Recipies");
+                name: "Recipes");
         }
     }
 }

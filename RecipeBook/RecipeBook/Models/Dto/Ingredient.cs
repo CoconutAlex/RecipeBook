@@ -10,6 +10,6 @@ namespace RecipeBook.Models.Dto
 
         //Navigation Property
         [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-        public IEnumerable<Recipe> Recipies { get; set; }
+        public IEnumerable<Recipe> Recipes { get; set; }
     }
 }

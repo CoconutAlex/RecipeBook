@@ -27,12 +27,12 @@ namespace RecipeBook.Migrations
                     b.Property<Guid>("IngredientsId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("RecipiesId")
+                    b.Property<Guid>("RecipesId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("IngredientsId", "RecipiesId");
+                    b.HasKey("IngredientsId", "RecipesId");
 
-                    b.HasIndex("RecipiesId");
+                    b.HasIndex("RecipesId");
 
                     b.ToTable("IngredientRecipe");
                 });
@@ -101,6 +101,9 @@ namespace RecipeBook.Migrations
                     b.Property<int>("Duration")
                         .HasColumnType("int");
 
+                    b.Property<string>("ImageName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Portions")
                         .HasColumnType("int");
 
@@ -112,7 +115,7 @@ namespace RecipeBook.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Recipies");
+                    b.ToTable("Recipes");
                 });
 
             modelBuilder.Entity("IngredientRecipe", b =>
@@ -125,7 +128,7 @@ namespace RecipeBook.Migrations
 
                     b.HasOne("RecipeBook.Models.Domain.Recipe", null)
                         .WithMany()
-                        .HasForeignKey("RecipiesId")
+                        .HasForeignKey("RecipesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

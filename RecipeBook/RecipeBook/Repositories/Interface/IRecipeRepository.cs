@@ -5,9 +5,9 @@ namespace RecipeBook.Repositories.Interface
 {
     public interface IRecipeRepository
     {
-        #region Recipies
+        #region Recipes
 
-        Task<IEnumerable<Recipe>> GetAllRecipies_Repos();
+        Task<IEnumerable<Recipe>> GetAllRecipes_Repos();
         Task<Recipe> GetRecipe_Repos(Guid id);
         Task<Recipe> AddRecipe_Repos(AddUpdateRecipeRequest addRecipeRequest);
         Task<Recipe> DeleteRecipe_Repos(Guid id);

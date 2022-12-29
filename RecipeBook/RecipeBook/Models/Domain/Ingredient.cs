@@ -7,6 +7,6 @@
         public IngredientQuantity IngredientQuantity { get; set; }
 
         //Navigation Property
-        public IEnumerable<Recipe> Recipies { get; set; }
+        public IEnumerable<Recipe> Recipes { get; set; }
     }
 }

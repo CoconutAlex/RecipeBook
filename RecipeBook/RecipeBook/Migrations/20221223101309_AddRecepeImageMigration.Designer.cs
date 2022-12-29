@@ -9,11 +9,11 @@ using RecipeBook.Data;
 
 #nullable disable
 
-namespace RecipeBook.Migrations
+namespace Serverapp.Migrations
 {
     [DbContext(typeof(DataBaseContext))]
-    [Migration("20221204185119_ThirdMigration")]
-    partial class ThirdMigration
+    [Migration("20221223101309_AddRecepeImageMigration")]
+    partial class AddRecepeImageMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -29,12 +29,12 @@ namespace RecipeBook.Migrations
                     b.Property<Guid>("IngredientsId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("RecipiesId")
+                    b.Property<Guid>("RecipesId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("IngredientsId", "RecipiesId");
+                    b.HasKey("IngredientsId", "RecipesId");
 
-                    b.HasIndex("RecipiesId");
+                    b.HasIndex("RecipesId");
 
                     b.ToTable("IngredientRecipe");
                 });
@@ -45,15 +45,47 @@ namespace RecipeBook.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("IngredientNameId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("IngredientQuantityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IngredientNameId");
+
+                    b.HasIndex("IngredientQuantityId");
+
+                    b.ToTable("Ingredients");
+                });
+
+            modelBuilder.Entity("RecipeBook.Models.Domain.IngredientName", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("IngredientsNames");
+                });
+
+            modelBuilder.Entity("RecipeBook.Models.Domain.IngredientQuantity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Quantity")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Ingredients");
+                    b.ToTable("IngredientsQuantities");
                 });
 
             modelBuilder.Entity("RecipeBook.Models.Domain.Recipe", b =>
@@ -71,6 +103,9 @@ namespace RecipeBook.Migrations
                     b.Property<int>("Duration")
                         .HasColumnType("int");
 
+                    b.Property<string>("ImageName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Portions")
                         .HasColumnType("int");
 
@@ -82,7 +117,7 @@ namespace RecipeBook.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Recipies");
+                    b.ToTable("Recipes");
                 });
 
             modelBuilder.Entity("IngredientRecipe", b =>
@@ -95,9 +130,24 @@ namespace RecipeBook.Migrations
 
                     b.HasOne("RecipeBook.Models.Domain.Recipe", null)
                         .WithMany()
-                        .HasForeignKey("RecipiesId")
+                        .HasForeignKey("RecipesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("RecipeBook.Models.Domain.Ingredient", b =>
+                {
+                    b.HasOne("RecipeBook.Models.Domain.IngredientName", "IngredientName")
+                        .WithMany()
+                        .HasForeignKey("IngredientNameId");
+
+                    b.HasOne("RecipeBook.Models.Domain.IngredientQuantity", "IngredientQuantity")
+                        .WithMany()
+                        .HasForeignKey("IngredientQuantityId");
+
+                    b.Navigation("IngredientName");
+
+                    b.Navigation("IngredientQuantity");
                 });
 #pragma warning restore 612, 618
         }

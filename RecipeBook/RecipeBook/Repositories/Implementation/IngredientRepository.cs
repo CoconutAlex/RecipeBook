@@ -20,7 +20,7 @@ namespace RecipeBook.Repositories.Implementation
         public async Task<IEnumerable<Ingredient>> GetAllIngredients_Repos()
         {
             return await dataBaseContext.Ingredients
-                .Include(x => x.Recipies)
+                .Include(x => x.Recipes)
                 .Include(x => x.IngredientName)
                 .Include(x => x.IngredientQuantity)
                 .ToListAsync();
@@ -29,7 +29,7 @@ namespace RecipeBook.Repositories.Implementation
         public async Task<Ingredient> GetIngredient_Repos(Guid id)
         {
             return await dataBaseContext.Ingredients
-                .Include(x => x.Recipies)
+                .Include(x => x.Recipes)
                 .Include(x => x.IngredientName)
                 .Include(x => x.IngredientQuantity)
                 .FirstOrDefaultAsync(ingredient => ingredient.Id == id);

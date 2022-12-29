@@ -22,14 +22,14 @@ namespace RecipeBook.Controllers
 
         #endregion
 
-        #region Get All Recipies
+        #region Get All Recipes
 
         [HttpGet]
-        public async Task<IActionResult> GetAllRecipies()
+        public async Task<IActionResult> GetAllRecipes()
         {
-            var recipiesDto = new List<Models.Dto.Recipe>();
+            var recipesDto = new List<Models.Dto.Recipe>();
 
-            var response = await repository.GetAllRecipies_Repos();
+            var response = await repository.GetAllRecipes_Repos();
             response.ToList().ForEach(recipe =>
             {
                 var recipeDto = new Models.Dto.Recipe()
@@ -41,6 +41,7 @@ namespace RecipeBook.Controllers
                     Portions = recipe.Portions,
                     Duration = recipe.Duration,
                     Difficulty = recipe.Difficulty,
+                    ImageName = recipe.ImageName,
                     Ingredients = recipe.Ingredients.Select(
                          q => new Models.Dto.Ingredient()
                          {
@@ -58,10 +59,10 @@ namespace RecipeBook.Controllers
                          }).ToList()
                 };
 
-                recipiesDto.Add(recipeDto);
+                recipesDto.Add(recipeDto);
             });
 
-            return Ok(recipiesDto);
+            return Ok(recipesDto);
         }
 
         #endregion
@@ -84,6 +85,7 @@ namespace RecipeBook.Controllers
                 Portions = response.Portions,
                 Duration = response.Duration,
                 Difficulty = response.Difficulty,
+                ImageName = response.ImageName,
                 Ingredients = response.Ingredients.Select(
                          q => new Models.Dto.Ingredient()
                          {
@@ -119,6 +121,7 @@ namespace RecipeBook.Controllers
                 Portions = addRecipeRequest.Portions,
                 Duration = addRecipeRequest.Duration,
                 Difficulty = addRecipeRequest.Difficulty,
+                ImageName = addRecipeRequest.ImageName,
                 Ingredients = addRecipeRequest.Ingredients.Select(
                          q => new Models.Domain.Requests.Recipe.AddIngredientForRecipeRequest()
                          {
@@ -135,7 +138,8 @@ namespace RecipeBook.Controllers
                 Steps = response.Steps,
                 Portions = response.Portions,
                 Duration = response.Duration,
-                Difficulty = response.Difficulty
+                Difficulty = response.Difficulty,
+                ImageName = response.ImageName
             };
 
             return Ok(responseDto);
@@ -159,6 +163,7 @@ namespace RecipeBook.Controllers
                 Portions = response.Portions,
                 Duration = response.Duration,
                 Difficulty = response.Difficulty,
+                ImageName = response.ImageName,
                 Ingredients = response.Ingredients.Select(
                          q => new Models.Dto.Ingredient()
                          {
@@ -195,6 +200,7 @@ namespace RecipeBook.Controllers
                 Portions = updateRecipeRequest.Portions,
                 Duration = updateRecipeRequest.Duration,
                 Difficulty = updateRecipeRequest.Difficulty,
+                ImageName = updateRecipeRequest.ImageName,
                 Ingredients = updateRecipeRequest.Ingredients.Select(
                          q => new Models.Domain.Requests.Recipe.AddIngredientForRecipeRequest()
                          {
@@ -217,6 +223,7 @@ namespace RecipeBook.Controllers
                 Portions = response.Portions,
                 Duration = response.Duration,
                 Difficulty = response.Difficulty,
+                ImageName = response.ImageName,
                 Ingredients = response.Ingredients.Select(
                          q => new Models.Dto.Ingredient()
                          {

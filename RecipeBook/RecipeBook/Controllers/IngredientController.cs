@@ -43,7 +43,7 @@ namespace RecipeBook.Controllers
                         Id = ingredient.IngredientQuantity.Id,
                         Quantity = ingredient.IngredientQuantity.Quantity
                     },
-                    Recipies = ingredient.Recipies.Select(
+                    Recipes = ingredient.Recipes.Select(
                          q => new Models.Dto.Recipe()
                          {
                              Id = q.Id,
@@ -81,7 +81,7 @@ namespace RecipeBook.Controllers
                     Id = response.IngredientQuantity.Id,
                     Quantity = response.IngredientQuantity.Quantity
                 },
-                Recipies = response.Recipies.Select(
+                Recipes = response.Recipes.Select(
                          q => new Models.Dto.Recipe()
                          {
                              Id = q.Id,
@@ -147,7 +147,7 @@ namespace RecipeBook.Controllers
                     Id = response.IngredientQuantity.Id,
                     Quantity = response.IngredientQuantity.Quantity
                 },
-                Recipies = response.Recipies.Select(
+                Recipes = response.Recipes.Select(
                          q => new Models.Dto.Recipe()
                          {
                              Id = q.Id,
@@ -191,7 +191,7 @@ namespace RecipeBook.Controllers
                     Id = response.IngredientQuantity.Id,
                     Quantity = response.IngredientQuantity.Quantity
                 },
-                Recipies = response.Recipies.Select(
+                Recipes = response.Recipes.Select(
                          q => new Models.Dto.Recipe()
                          {
                              Id = q.Id,

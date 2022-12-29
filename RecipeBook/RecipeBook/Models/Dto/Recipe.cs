@@ -17,6 +17,8 @@ namespace RecipeBook.Models.Dto
         public int Duration { get; set; }
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public Enums.DomainEnums.Difficulty Difficulty { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string ImageName { get; set; }
 
         //Navigation Property
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
