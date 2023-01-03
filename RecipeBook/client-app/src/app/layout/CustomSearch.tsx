@@ -1,7 +1,7 @@
 import axios from 'axios';
 import _ from 'lodash'
-import React, { useCallback, useEffect, useReducer, useRef, useState } from "react";
-import { Grid, Header, Search, Segment } from "semantic-ui-react";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
+import { Grid, Search } from "semantic-ui-react";
 import { Recipe } from '../models/recipe';
 
 const initialState = {
@@ -70,12 +70,14 @@ export default function CustomSearch() {
                 selection: ''
             })
         }, 300)
-    }, [])
-    React.useEffect(() => {
+    }, [recipes])
+
+    useEffect(() => {
         return () => {
-            clearTimeout(timeoutRef.current)
+            clearTimeout(timeoutRef.current);
         }
     }, [])
+
     return (
         <Grid>
             <Grid.Column width={6}>

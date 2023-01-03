@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { Button, Form, Grid, Icon, Input, Item, List, Select } from 'semantic-ui-react'
+import { Button, Form, Grid, Icon, Input, List, Select } from 'semantic-ui-react'
 import { Difficulty, IngredientName, IngredientQuantity } from '../../../app/models/recipe';
 
 export interface DropdownList {
@@ -34,7 +34,7 @@ export default function NewRecipeForm() {
 
     }, []);
 
-    var [quantities, setQuantities] = useState<DropdownList[]>([]);
+    var [quantities] = useState<DropdownList[]>([]);
     function getIngredientsQuantity() {
         quantities = [];
         ingredientsQuantity.map((quantity) => (
@@ -44,10 +44,10 @@ export default function NewRecipeForm() {
         return quantities;
     }
 
-    var [names, setNames] = useState<DropdownList[]>([]);
+    var [names] = useState<DropdownList[]>([]);
     function getIngredientsName() {
         names = [];
-        ingredientsName.map(name => {
+        ingredientsName.forEach(name => {
             names.push({ key: name.id, text: name.name, value: name.name });
         });
 
@@ -91,7 +91,7 @@ export default function NewRecipeForm() {
         var selectedId = '';
 
         ingredientsQuantity.every((item) => {
-            if (item.quantity == data.value) {
+            if (item.quantity === data.value) {
                 selectedId = item.id;
                 return false;
             }
@@ -105,7 +105,7 @@ export default function NewRecipeForm() {
         var selectedId = '';
 
         ingredientsName.every((item) => {
-            if (item.name == data.value) {
+            if (item.name === data.value) {
                 selectedId = item.id;
                 return false;
             }
@@ -113,6 +113,16 @@ export default function NewRecipeForm() {
         });
 
         setSelectedName({ id: selectedId, name: data.value });
+    };
+
+    const [partOfDescription, setPartOfDescription] = useState<string>();
+    const addPartOfDescription = (e: any, data: any) => {
+        setPartOfDescription(data.value);
+    };
+
+    const [someDescription, setSomeDescription] = useState<string>('');
+    const addSomeDescription = () => {
+        setSomeDescription(`${someDescription} \n\n - ${partOfDescription}`);
     };
 
     return (
@@ -183,21 +193,29 @@ export default function NewRecipeForm() {
                         (insertedIngredients.length)
                             ? insertedIngredients.map((item) => (
                                 <List.Item key={item.key}>
-                                    <div >{item.value} <Icon id='mini-trash' name='trash alternate outline' onClick={() => removeIngredient(item)} /></div>
+                                    <div >{item.value} <Icon color='red' id='mini-trash' name='trash alternate outline' onClick={() => removeIngredient(item)} /></div>
                                 </List.Item>
                             ))
                             : <div>Empty List ...</div>
                     }
                 </List>
             </Form.Field>
-
-            <Form.Field
-                id='form-input-control-steps'
-                control={Input}
-                label='Steps'
-                placeholder='Steps'
-            />
-            <Form.TextArea label='Description' placeholder='Description' />
+            <Form.Group>
+                <Form.Field
+                    id='form-input-control-step'
+                    control={Input}
+                    label='Step'
+                    placeholder='Step'
+                    type='number'
+                />
+                <Form.TextArea width='twelve' label='Description for Step' placeholder='Description for Step' onChange={addPartOfDescription} />
+                <Grid>
+                    <Grid.Column verticalAlign='bottom'>
+                        <Icon id='add-some-description' color='green' name='add' size='big' onClick={() => addSomeDescription()} ></Icon>
+                    </Grid.Column>
+                </Grid>
+            </Form.Group>
+            <Form.TextArea label='Description' placeholder='Description' value={someDescription} style={{ minHeight: 1000 }}/>
             <Grid>
                 <Grid.Column textAlign="center">
                     <Button type='submit' primary>Submit</Button>

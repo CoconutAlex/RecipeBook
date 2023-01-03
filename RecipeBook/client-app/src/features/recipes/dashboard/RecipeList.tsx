@@ -1,6 +1,6 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { NavLink } from 'react-router-dom';
 import { Button, Icon, Item, Segment } from 'semantic-ui-react';
 import { Difficulty, Recipe } from '../../../app/models/recipe';
 
@@ -9,7 +9,6 @@ interface Props {
 }
 
 export default function RecipeList({ recipesList }: Props) {
-    const navigate = useNavigate();
 
     const [recipes, setRecipes] = useState<Recipe[]>([]);
 
@@ -25,7 +24,7 @@ export default function RecipeList({ recipesList }: Props) {
                 newRecipes.every((item) => {
                     index++;
 
-                    if (item.id == response.data.id) {
+                    if (item.id === response.data.id) {
                         return false;
                     }
 
@@ -44,7 +43,21 @@ export default function RecipeList({ recipesList }: Props) {
             <Item.Group divided>
                 {recipes.map((recipe) => (
                     <Item key={recipe.id}>
-                        <Item.Image size='small' src={`/assets/recipesImages/${recipe.imageName}.png`} />
+                        <Item.Image size='small' src={`/assets/recipesImages/${recipe.imageName}.png`}
+                            as={NavLink} to='/details'
+                            state={{
+                                props: {
+                                    title: recipe.title,
+                                    portions: recipe.portions,
+                                    duration: recipe.duration,
+                                    imageName: recipe.imageName,
+                                    difficulty: recipe.difficulty,
+                                    ingredientList: recipe.ingredients,
+                                    steps: recipe.steps,
+                                    description: recipe.description
+                                }
+                            }}
+                        />
 
                         <Item.Content>
                             <Item.Header>{recipe.title}</Item.Header>
@@ -54,7 +67,24 @@ export default function RecipeList({ recipesList }: Props) {
                                 <div><Icon name='chart bar outline' /> {`Difficulty: ${Difficulty[recipe.difficulty]} `}</div>
                             </Item.Description>
                             <Item.Extra>
-                                <Button floated='left' primary onClick={() => navigate("/contact")}>View Recipe</Button>
+                                <Button
+                                    floated='left'
+                                    primary
+                                    as={NavLink} to='/details'
+                                    state={{
+                                        props: {
+                                            title: recipe.title,
+                                            portions: recipe.portions,
+                                            duration: recipe.duration,
+                                            imageName: recipe.imageName,
+                                            difficulty: recipe.difficulty,
+                                            ingredientList: recipe.ingredients,
+                                            steps: recipe.steps,
+                                            description: recipe.description
+                                        }
+                                    }}>
+                                    View Recipe
+                                </Button>
                                 <Button negative floated='right' onClick={() => DeleteRecipe(recipe.id)}><div><Icon name='trash alternate outline' /></div></Button>
                                 <Button
                                     as={NavLink} to='/editRecipe'
@@ -70,7 +100,6 @@ export default function RecipeList({ recipesList }: Props) {
                                             description: recipe.description
                                         }
                                     }}
-                                    name='newRecipe'
                                     basic color='yellow' floated='right'>
                                     <div>Edit Recipe <Icon name='edit outline' /></div>
                                 </Button>

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Button, Form, Grid, Icon, Input, Item, List, Select } from 'semantic-ui-react'
+import { Button, Form, Grid, Icon, Input, List, Select } from 'semantic-ui-react'
 import { Difficulty, IngredientName, IngredientQuantity } from '../../../app/models/recipe';
 
 export interface DropdownList {
@@ -19,7 +19,6 @@ export default function EditRecipeForm() {
 
     const location = useLocation()
     const { props } = location.state
-    console.log(props);
 
     const [ingredientsQuantity, setIngredientsQuantity] = useState<IngredientQuantity[]>([]);
     const [ingredientsName, setIngredientsName] = useState<IngredientName[]>([]);
@@ -36,10 +35,9 @@ export default function EditRecipeForm() {
             .then(response => {
                 setIngredientsName(response.data);
             });
-
     }, []);
 
-    var [quantities, setQuantities] = useState<DropdownList[]>([]);
+    var [quantities] = useState<DropdownList[]>([]);
     function getIngredientsQuantity() {
         quantities = [];
         ingredientsQuantity.map((quantity) => (
@@ -49,10 +47,10 @@ export default function EditRecipeForm() {
         return quantities;
     }
 
-    var [names, setNames] = useState<DropdownList[]>([]);
+    var [names] = useState<DropdownList[]>([]);
     function getIngredientsName() {
         names = [];
-        ingredientsName.map(name => {
+        ingredientsName.forEach(name => {
             names.push({ key: name.id, text: name.name, value: name.name });
         });
 
@@ -106,7 +104,7 @@ export default function EditRecipeForm() {
         var selectedId = '';
 
         ingredientsQuantity.every((item) => {
-            if (item.quantity == data.value) {
+            if (item.quantity === data.value) {
                 selectedId = item.id;
                 return false;
             }
@@ -120,7 +118,7 @@ export default function EditRecipeForm() {
         var selectedId = '';
 
         ingredientsName.every((item) => {
-            if (item.name == data.value) {
+            if (item.name === data.value) {
                 selectedId = item.id;
                 return false;
             }
@@ -130,6 +128,16 @@ export default function EditRecipeForm() {
         setSelectedName({ id: selectedId, name: data.value });
     };
 
+    const [partOfDescription, setPartOfDescription] = useState<string>();
+    const addPartOfDescription = (e: any, data: any) => {
+        setPartOfDescription(data.value);
+    };
+
+    const [someDescription, setSomeDescription] = useState<string>(props.description);
+    const addSomeDescription = () => {
+        setSomeDescription(`${someDescription} \n\n - ${partOfDescription}`);
+    };
+
     return (
         <Form>
             <Form.Field
@@ -137,7 +145,7 @@ export default function EditRecipeForm() {
                 control={Input}
                 label='Title'
                 placeholder='Title'
-                value={props.title}
+                defaultValue={props.title}
             />
             <Form.Group widths='equal'>
                 <Form.Field
@@ -145,21 +153,21 @@ export default function EditRecipeForm() {
                     control={Input}
                     label='Portions'
                     placeholder='Portions'
-                    value={props.portions}
+                    defaultValue={props.portions}
                 />
                 <Form.Field
                     id='form-input-control-duration'
                     control={Input}
                     label='Duration'
                     placeholder='Duration'
-                    value={props.duration}
+                    defaultValue={props.duration}
                 />
                 <Form.Field
                     id='form-input-control-image-name'
                     control={Input}
                     label='Image Name'
                     placeholder='Image name'
-                    value={props.imageName}
+                    defaultValue={props.imageName}
                 />
                 <Form.Field
                     control={Select}
@@ -167,7 +175,7 @@ export default function EditRecipeForm() {
                     label='Difficulty'
                     placeholder='Difficulty'
                     search
-                    value={Difficulty[props.difficulty]}
+                    defaultValue={Difficulty[props.difficulty]}
                 />
             </Form.Group>
             <Form.Group>
@@ -202,22 +210,29 @@ export default function EditRecipeForm() {
                         (insertedIngredients.length)
                             ? insertedIngredients.map((item) => (
                                 <List.Item key={item.key}>
-                                    <div >{item.value} <Icon id='mini-trash' name='trash alternate outline' onClick={() => removeIngredient(item)} /></div>
+                                    <div >{item.value} <Icon color='red' id='mini-trash' name='trash alternate outline' onClick={() => removeIngredient(item)} /></div>
                                 </List.Item>
                             ))
                             : <div>Empty List ...</div>
                     }
                 </List>
             </Form.Field>
-
-            <Form.Field
-                id='form-input-control-steps'
-                control={Input}
-                label='Steps'
-                placeholder='Steps'
-                value={props.steps}
-            />
-            <Form.TextArea label='Description' placeholder='Description' value={props.description} />
+            <Form.Group>
+                <Form.Field
+                    id='form-input-control-step'
+                    control={Input}
+                    label='Step'
+                    placeholder='Step'
+                    type='number'
+                />
+                <Form.TextArea width='twelve' label='Description for Step' placeholder='Description for Step' onChange={addPartOfDescription} />
+                <Grid>
+                    <Grid.Column verticalAlign='bottom'>
+                        <Icon id='add-some-description' color='green' name='add' size='big' onClick={() => addSomeDescription()} ></Icon>
+                    </Grid.Column>
+                </Grid>
+            </Form.Group>
+            <Form.TextArea label='Description' placeholder='Description' value={someDescription} style={{ minHeight: 1000 }}/>
             <Grid>
                 <Grid.Column textAlign="center">
                     <Button type='submit' primary>Submit</Button>

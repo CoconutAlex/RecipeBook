@@ -19,7 +19,7 @@ export default function NavBar() {
                     </Button>
                 </Menu.Item>
                 <Menu.Item position='right'>
-                    <CustomSearch />
+                <CustomSearch />
                 </Menu.Item>
             </Menu>
         </Segment>

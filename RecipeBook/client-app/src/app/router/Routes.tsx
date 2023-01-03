@@ -5,7 +5,6 @@ import RecipeDetails from '../../features/recipes/details/RecipeDetails';
 import EditRecipeForm from '../../features/recipes/form/EditRecipeForm';
 import NewRecipeForm from '../../features/recipes/form/NewRecipeForm';
 import App from "../layout/App";
-import NavBar from '../layout/NavBar';
 
 export const routes: RouteObject[] = [
     {
