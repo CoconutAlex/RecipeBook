@@ -122,11 +122,19 @@ export default function NewRecipeForm() {
 
     const [someDescription, setSomeDescription] = useState<string>('');
     const addSomeDescription = () => {
-        setSomeDescription(`${someDescription} \n\n - ${partOfDescription}`);
+        setSomeDescription(`${(someDescription) ? someDescription + '\n\n\n' : ''} ${currentStep} ${partOfDescription}`);
+        var counter: number = currentStep;
+        setCurrentStep(++counter);
+        setPartOfDescription('');
+    };
+
+    const [currentStep, setCurrentStep] = useState<number>(0);
+    const addCurrentStep = (e: any, data: any) => {
+        setCurrentStep(data.value);
     };
 
     return (
-        <Form>
+        <Form autoComplete="off">
             <Form.Field
                 id='form-input-control-title'
                 control={Input}
@@ -140,12 +148,16 @@ export default function NewRecipeForm() {
                     control={Input}
                     label='Portions'
                     placeholder='Portions'
+                    type='number'
+                    className='without-spinner'
                 />
                 <Form.Field
                     id='form-input-control-duration'
                     control={Input}
                     label='Duration'
                     placeholder='Duration'
+                    type='number'
+                    className='without-spinner'
                 />
                 <Form.Field
                     id='form-input-control-image-name'
@@ -207,15 +219,24 @@ export default function NewRecipeForm() {
                     label='Step'
                     placeholder='Step'
                     type='number'
+                    onChange={addCurrentStep}
+                    defaultValue='1'
+                    value={currentStep}
                 />
-                <Form.TextArea width='twelve' label='Description for Step' placeholder='Description for Step' onChange={addPartOfDescription} />
+                <Form.TextArea
+                    width='twelve'
+                    label='Description for Step'
+                    placeholder='Description for Step'
+                    onChange={addPartOfDescription}
+                    value={partOfDescription}
+                />
                 <Grid>
                     <Grid.Column verticalAlign='bottom'>
-                        <Icon id='add-some-description' color='green' name='add' size='big' onClick={() => addSomeDescription()} ></Icon>
+                        <Icon id='add-some-description' name='add' size='big' onClick={() => addSomeDescription()} ></Icon>
                     </Grid.Column>
                 </Grid>
             </Form.Group>
-            <Form.TextArea label='Description' placeholder='Description' value={someDescription} style={{ minHeight: 1000 }}/>
+            <Form.TextArea label='Description' placeholder='Description' value={someDescription} style={{ minHeight: 1000 }} />
             <Grid>
                 <Grid.Column textAlign="center">
                     <Button type='submit' primary>Submit</Button>
