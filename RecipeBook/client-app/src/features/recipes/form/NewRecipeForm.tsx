@@ -16,6 +16,15 @@ export interface IngredientItem {
 
 export default function NewRecipeForm() {
 
+    const [hasScrolled, setHasScrolled] = useState(false);
+
+    useEffect(() => {
+        if (!hasScrolled) {
+            window.scrollTo(0, 0);
+            setHasScrolled(true);
+        }
+    }, [hasScrolled]);
+    
     const [ingredientsQuantity, setIngredientsQuantity] = useState<IngredientQuantity[]>([]);
     const [ingredientsName, setIngredientsName] = useState<IngredientName[]>([]);
     const [selectedQuantity, setSelectedQuantity] = useState<IngredientQuantity>();
@@ -122,13 +131,16 @@ export default function NewRecipeForm() {
 
     const [someDescription, setSomeDescription] = useState<string>('');
     const addSomeDescription = () => {
-        setSomeDescription(`${(someDescription) ? someDescription + '\n\n\n' : ''} ${currentStep} ${partOfDescription}`);
+        setSomeDescription(`${someDescription} 
+        \n\n\n STEP ${currentStep}
+        \n _____________________
+        \n ${partOfDescription}`);
         var counter: number = currentStep;
         setCurrentStep(++counter);
         setPartOfDescription('');
     };
 
-    const [currentStep, setCurrentStep] = useState<number>(0);
+    const [currentStep, setCurrentStep] = useState<number>(1);
     const addCurrentStep = (e: any, data: any) => {
         setCurrentStep(data.value);
     };
@@ -194,7 +206,12 @@ export default function NewRecipeForm() {
                 />
                 <Grid>
                     <Grid.Column verticalAlign='bottom'>
-                        <Button positive onClick={() => addIngredient((selectedQuantity) ? selectedQuantity.quantity : '', (selectedName) ? selectedName.name : '')}><div><Icon name='check' /></div></Button>
+                        <Button
+                            positive
+                            className={(selectedQuantity && selectedName) ? '' : 'disabled'}
+                            onClick={() => addIngredient((selectedQuantity) ? selectedQuantity.quantity : '', (selectedName) ? selectedName.name : '')}>
+                            <div><Icon name='check' /></div>
+                        </Button>
                     </Grid.Column>
                 </Grid>
             </Form.Group>
@@ -220,7 +237,6 @@ export default function NewRecipeForm() {
                     placeholder='Step'
                     type='number'
                     onChange={addCurrentStep}
-                    defaultValue='1'
                     value={currentStep}
                 />
                 <Form.TextArea
@@ -232,7 +248,7 @@ export default function NewRecipeForm() {
                 />
                 <Grid>
                     <Grid.Column verticalAlign='bottom'>
-                        <Icon id='add-some-description' name='add' size='big' onClick={() => addSomeDescription()} ></Icon>
+                        <Icon id='add-some-description' name='add' size='big' className={(currentStep && partOfDescription) ? '' : 'disabled'} onClick={() => (currentStep && partOfDescription) ? addSomeDescription() : ''} ></Icon>
                     </Grid.Column>
                 </Grid>
             </Form.Group>

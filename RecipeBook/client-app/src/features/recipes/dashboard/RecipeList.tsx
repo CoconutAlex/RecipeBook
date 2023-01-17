@@ -10,6 +10,8 @@ interface Props {
 
 export default function RecipeList({ recipesList }: Props) {
 
+    const [loading, setLoading] = useState({});
+
     const [recipes, setRecipes] = useState<Recipe[]>([]);
 
     useEffect(() => {
@@ -17,6 +19,7 @@ export default function RecipeList({ recipesList }: Props) {
     }, [recipesList])
 
     const DeleteRecipe = (id: string) => {
+        setLoading(prevLoading => ({ ...prevLoading, [id]: true }));
         axios.delete(`http://localhost:5118/Recipe/DeleteRecipe/${id}`)
             .then(response => {
                 const newRecipes = [...recipes];
@@ -35,6 +38,7 @@ export default function RecipeList({ recipesList }: Props) {
                     newRecipes.splice(index, 1);
                     setRecipes(newRecipes);
                 }
+                setLoading(prevLoading => ({ ...prevLoading, [id]: false }));
             })
     }
 
@@ -68,6 +72,7 @@ export default function RecipeList({ recipesList }: Props) {
                             </Item.Description>
                             <Item.Extra>
                                 <Button
+                                    id={`display-${recipe.id}`}
                                     floated='left'
                                     primary
                                     as={NavLink} to='/details'
@@ -85,8 +90,13 @@ export default function RecipeList({ recipesList }: Props) {
                                     }}>
                                     View Recipe
                                 </Button>
-                                <Button negative floated='right' onClick={() => DeleteRecipe(recipe.id)}><div><Icon name='trash alternate outline' /></div></Button>
+                                <Button id={`delete-${recipe.id}`} negative floated='right' className={`btn ${loading[recipe.id as keyof {}] ? 'loading' : ''}`} onClick={() => DeleteRecipe(recipe.id)}>
+                                    <div>
+                                        <Icon name='trash alternate outline' />
+                                    </div>
+                                </Button>
                                 <Button
+                                    id={`edit-${recipe.id}`}
                                     as={NavLink} to='/editRecipe'
                                     state={{
                                         props: {
@@ -108,6 +118,6 @@ export default function RecipeList({ recipesList }: Props) {
                     </Item>
                 ))}
             </Item.Group>
-        </Segment>
+        </Segment >
     )
 }

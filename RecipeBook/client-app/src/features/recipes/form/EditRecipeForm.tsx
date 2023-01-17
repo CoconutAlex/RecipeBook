@@ -20,6 +20,15 @@ export default function EditRecipeForm() {
     const location = useLocation()
     const { props } = location.state
 
+    const [hasScrolled, setHasScrolled] = useState(false);
+
+    useEffect(() => {
+        if (!hasScrolled) {
+            window.scrollTo(0, 0);
+            setHasScrolled(true);
+        }
+    }, [hasScrolled]);
+
     const [ingredientsQuantity, setIngredientsQuantity] = useState<IngredientQuantity[]>([]);
     const [ingredientsName, setIngredientsName] = useState<IngredientName[]>([]);
     const [selectedQuantity, setSelectedQuantity] = useState<IngredientQuantity>();
@@ -135,7 +144,10 @@ export default function EditRecipeForm() {
 
     const [someDescription, setSomeDescription] = useState<string>(props.description);
     const addSomeDescription = () => {
-        setSomeDescription(`${someDescription} \n\n ${currentStep} ${partOfDescription}`);
+        setSomeDescription(`${someDescription} 
+        \n\n\n STEP ${currentStep}
+        \n _____________________
+        \n ${partOfDescription}`);
         var counter: number = currentStep;
         setCurrentStep(++counter);
         setPartOfDescription('');
@@ -212,7 +224,12 @@ export default function EditRecipeForm() {
                 />
                 <Grid>
                     <Grid.Column verticalAlign='bottom'>
-                        <Button positive onClick={() => addIngredient((selectedQuantity) ? selectedQuantity.quantity : '', (selectedName) ? selectedName.name : '')}><div><Icon name='check' /></div></Button>
+                        <Button
+                            positive
+                            className={(selectedQuantity && selectedName) ? '' : 'disabled'}
+                            onClick={() => addIngredient((selectedQuantity) ? selectedQuantity.quantity : '', (selectedName) ? selectedName.name : '')}>
+                            <div><Icon name='check' /></div>
+                        </Button>
                     </Grid.Column>
                 </Grid>
             </Form.Group>
@@ -249,11 +266,11 @@ export default function EditRecipeForm() {
                 />
                 <Grid>
                     <Grid.Column verticalAlign='bottom'>
-                        <Icon id='add-some-description' name='add' size='big' onClick={() => addSomeDescription()} ></Icon>
+                        <Icon id='add-some-description' name='add' size='big' className={(currentStep && partOfDescription) ? '' : 'disabled'} onClick={() => (currentStep && partOfDescription) ? addSomeDescription() : ''} ></Icon>
                     </Grid.Column>
                 </Grid>
             </Form.Group>
-            <Form.TextArea label='Description' placeholder='Description' value={someDescription} style={{ minHeight: 1000 }} />
+            <Form.TextArea label='Description' placeholder='Description' value={someDescription} style={{ minHeight: 500 }} />
             <Grid>
                 <Grid.Column textAlign="center">
                     <Button type='submit' primary>Submit</Button>
