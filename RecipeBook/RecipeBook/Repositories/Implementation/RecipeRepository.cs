@@ -99,6 +99,7 @@ namespace RecipeBook.Repositories.Implementation
                             IngredientQuantity = dataBaseContext.IngredientsQuantities.FirstOrDefault(ingredientQuantity => ingredientQuantity.Id == dataBaseContext.Ingredients.FirstOrDefault(ingredient => ingredient.Id == q.IngredientId).IngredientQuantity.Id)
                         }).ToList();
 
+            dataBaseContext.Recipes.Update(updatedRecipe);
             await dataBaseContext.SaveChangesAsync();
 
             return updatedRecipe;

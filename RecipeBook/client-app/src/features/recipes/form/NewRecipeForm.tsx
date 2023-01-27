@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { useEffect, useState } from 'react';
-import { Button, Form, Grid, Icon, Input, List, Select } from 'semantic-ui-react'
+import { SetStateAction, useEffect, useState } from 'react';
+import { Button, Container, Form, Grid, GridColumn, Icon, Input, Label, List, Select, TextArea } from 'semantic-ui-react'
 import { Difficulty, IngredientName, IngredientQuantity } from '../../../app/models/recipe';
 
 export interface DropdownList {
@@ -10,6 +10,11 @@ export interface DropdownList {
 }
 
 export interface IngredientItem {
+    key: string,
+    value: string
+}
+
+export interface DescriptionItem {
     key: string,
     value: string
 }
@@ -24,7 +29,7 @@ export default function NewRecipeForm() {
             setHasScrolled(true);
         }
     }, [hasScrolled]);
-    
+
     const [ingredientsQuantity, setIngredientsQuantity] = useState<IngredientQuantity[]>([]);
     const [ingredientsName, setIngredientsName] = useState<IngredientName[]>([]);
     const [selectedQuantity, setSelectedQuantity] = useState<IngredientQuantity>();
@@ -79,6 +84,13 @@ export default function NewRecipeForm() {
         return difficulties;
     }
 
+    const onChangeDifficulty = (e: any, data: any) => {
+        var find = data.options.find((item: { value: any; }) => {
+            return item.value === data.value
+        })
+        setNewDifficulty(find.key);
+    };
+
     var [insertedIngredients, setinsertedIngredients] = useState<IngredientItem[]>([]);
     const addIngredient = (quantity: string, name: string) => {
         const newIngredients = [...insertedIngredients];
@@ -86,6 +98,10 @@ export default function NewRecipeForm() {
         newIngredients.push({ key: uniqueKey, value: `${quantity} ${name}` });
         setinsertedIngredients(newIngredients);
     };
+
+    function deleteAllIngredients() {
+        setinsertedIngredients([]);
+    }
 
     const removeIngredient = (removeItem: IngredientItem) => {
         const newIngredients = [...insertedIngredients];
@@ -124,35 +140,91 @@ export default function NewRecipeForm() {
         setSelectedName({ id: selectedId, name: data.value });
     };
 
+    const [currentStep, setCurrentStep] = useState<number>(1);
+
     const [partOfDescription, setPartOfDescription] = useState<string>();
     const addPartOfDescription = (e: any, data: any) => {
         setPartOfDescription(data.value);
     };
 
+    const [listOfDescription, setListOfDescriptions] = useState<DescriptionItem[]>([]);
     const [someDescription, setSomeDescription] = useState<string>('');
     const addSomeDescription = () => {
-        setSomeDescription(`${someDescription} 
-        \n\n\n STEP ${currentStep}
-        \n _____________________
-        \n ${partOfDescription}`);
         var counter: number = currentStep;
-        setCurrentStep(++counter);
+
+        var newListOfDescriptions = [...listOfDescription];
+        newListOfDescriptions = [...newListOfDescriptions.slice(0, counter - 1), { key: counter.toString(), value: `${partOfDescription}` }, ...newListOfDescriptions.slice(counter)];
+        setListOfDescriptions(newListOfDescriptions);
+        setCurrentStep(counter + 1);
         setPartOfDescription('');
     };
 
-    const [currentStep, setCurrentStep] = useState<number>(1);
-    const addCurrentStep = (e: any, data: any) => {
-        setCurrentStep(data.value);
+    const removeSomeDescription = (step: number) => {
+        const newListOfDescriptions = [...listOfDescription];
+        if (step !== -1) {
+            newListOfDescriptions.splice(step - 1, 1);
+            var restArray = newListOfDescriptions.slice(step - 1, newListOfDescriptions.length);
+            for (var i = step - 1; i < newListOfDescriptions.length; i++) {
+                newListOfDescriptions[i].key = (i + 1).toString();
+            }
+
+            setListOfDescriptions(newListOfDescriptions);
+            if (step - 1 <= 0) {
+                setCurrentStep(1);
+            } else {
+                setCurrentStep(step - 1);
+            }
+            setPartOfDescription('');
+        }
     };
 
+    const [newTitle, setNewTitle] = useState('');
+    const [newPortions, setNewPortions] = useState('');
+    const [newDuration, setNewDuration] = useState('');
+    const [newImageName, setNewImageName] = useState('');
+    const [newDifficulty, setNewDifficulty] = useState('');
+
+    const handleSubmit = () => {
+        var finalDescription = '';
+        listOfDescription.forEach(item => {
+            finalDescription += `${item.value}\n\n `;
+        })
+        const request = {
+            title: newTitle,
+            portions: parseInt(newPortions),
+            duration: parseInt(newDuration),
+            imageName: newImageName,
+            difficulty: parseInt(newDifficulty),
+            steps: listOfDescription.length,
+            ingredients: [{
+                ingredientId: "BFD37128-DCAA-4707-FFD6-08DAE26FC1FC"
+            }],
+            description: finalDescription
+        }
+
+        axios.post('http://localhost:5118/Recipe/AddRecipe', request)
+            .then(response => {
+                alert("The response is: " + response);
+            })
+            .catch(error => {
+                alert("The error is: " + error);
+            });
+    };
+
+    function handleKeyPress(event: React.KeyboardEvent<HTMLInputElement>) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+        }
+    }
+
     return (
-        <Form autoComplete="off">
+        <Form autoComplete="off" onKeyPress={handleKeyPress}>
             <Form.Field
                 id='form-input-control-title'
                 control={Input}
                 label='Title'
                 placeholder='Title'
-
+                onChange={(e: { target: { value: SetStateAction<string>; }; }) => setNewTitle(e.target.value)}
             />
             <Form.Group widths='equal'>
                 <Form.Field
@@ -162,6 +234,7 @@ export default function NewRecipeForm() {
                     placeholder='Portions'
                     type='number'
                     className='without-spinner'
+                    onChange={(e: { target: { value: SetStateAction<string>; }; }) => setNewPortions(e.target.value)}
                 />
                 <Form.Field
                     id='form-input-control-duration'
@@ -170,12 +243,14 @@ export default function NewRecipeForm() {
                     placeholder='Duration'
                     type='number'
                     className='without-spinner'
+                    onChange={(e: { target: { value: SetStateAction<string>; }; }) => setNewDuration(e.target.value)}
                 />
                 <Form.Field
                     id='form-input-control-image-name'
                     control={Input}
                     label='Image Name'
                     placeholder='Image name'
+                    onChange={(e: { target: { value: SetStateAction<string>; }; }) => setNewImageName(e.target.value)}
                 />
                 <Form.Field
                     control={Select}
@@ -183,7 +258,18 @@ export default function NewRecipeForm() {
                     label='Difficulty'
                     placeholder='Difficulty'
                     search
+                    onChange={onChangeDifficulty}
                 />
+                {/* <Form.Field
+                    id='form-input-control-steps'
+                    control={Input}
+                    label='Steps'
+                    placeholder='Steps'
+                    type='number'
+                    onChange={(e: { target: { value: SetStateAction<string>; }; }) => setNewSteps(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    disabled
+                /> */}
             </Form.Group>
             <Form.Group>
                 <Form.Field
@@ -212,25 +298,40 @@ export default function NewRecipeForm() {
                             onClick={() => addIngredient((selectedQuantity) ? selectedQuantity.quantity : '', (selectedName) ? selectedName.name : '')}>
                             <div><Icon name='check' /></div>
                         </Button>
+                        {
+                            (insertedIngredients.length > 1) &&
+                            <Button
+                                negative
+                                className={(insertedIngredients.length > 0) ? '' : 'disabled'}
+                                onClick={() => deleteAllIngredients()}>
+                                <div>Delete all<Icon name='trash alternate outline' /></div>
+                            </Button>
+                        }
+
                     </Grid.Column>
                 </Grid>
             </Form.Group>
             <Form.Field id='form-input-control-ingredients'>
                 <label>Ingredients List</label>
-                <List bulleted>
-                    {
-                        (insertedIngredients.length)
-                            ? insertedIngredients.map((item) => (
-                                <List.Item key={item.key}>
-                                    <div >{item.value} <Icon color='red' id='mini-trash' name='trash alternate outline' onClick={() => removeIngredient(item)} /></div>
-                                </List.Item>
-                            ))
-                            : <div>Empty List ...</div>
-                    }
-                </List>
+                {
+                    <List horizontal >
+                        {
+                            (insertedIngredients.length)
+                                ? insertedIngredients.map((item) => (
+                                    <List.Item key={item.key}>
+                                        <Label as='a' color='blue' size='medium'>
+                                            {item.value}
+                                            <Icon name='close' id='mini-trash' color='black' onClick={() => removeIngredient(item)} />
+                                        </Label>
+                                    </List.Item>
+                                ))
+                                : <List.Item> Empty List ... </List.Item>
+                        }
+                    </List>
+                }
             </Form.Field>
             <Form.Group>
-                <Form.Field
+                {/* <Form.Field
                     id='form-input-control-step'
                     control={Input}
                     label='Step'
@@ -238,26 +339,67 @@ export default function NewRecipeForm() {
                     type='number'
                     onChange={addCurrentStep}
                     value={currentStep}
-                />
+                /> */}
+
                 <Form.TextArea
                     width='twelve'
-                    label='Description for Step'
+                    label={<><Label >Description for Step</Label><Label circular style={{ 'backgroundColor': '#BC6F6F', 'color': 'white', 'marginBottom': '10px' }}>{currentStep}</Label></>}
                     placeholder='Description for Step'
                     onChange={addPartOfDescription}
                     value={partOfDescription}
                 />
                 <Grid>
-                    <Grid.Column verticalAlign='bottom'>
-                        <Icon id='add-some-description' name='add' size='big' className={(currentStep && partOfDescription) ? '' : 'disabled'} onClick={() => (currentStep && partOfDescription) ? addSomeDescription() : ''} ></Icon>
+                    <Grid.Column verticalAlign='bottom' className={partOfDescription ? '' : 'disabled-column'}>
+                        <Button icon={{ id: 'add-some-description', name: 'add', size: 'big', color: 'green' }} onClick={() => (currentStep && partOfDescription) && addSomeDescription()} className={'button-without-background'} />
+                    </Grid.Column>
+                </Grid>
+                <Grid>
+                    <Grid.Column verticalAlign='bottom' className={partOfDescription ? '' : 'disabled-column'}>
+                        <Button icon={{ id: 'remove-some-description', name: 'minus', size: 'big', color: 'red' }} onClick={() => (currentStep && partOfDescription) && removeSomeDescription(currentStep)} className={'button-without-background'} />
                     </Grid.Column>
                 </Grid>
             </Form.Group>
-            <Form.TextArea label='Description' placeholder='Description' value={someDescription} style={{ minHeight: 1000 }} />
+
+            {
+                (listOfDescription.length > 0) &&
+                <label style={{ fontWeight: 'bold' }}>Description</label> &&
+                <Container textAlign='justified' className='segment' style={{ marginBottom: '20px', border: '1px solid black', background: 'transparent' }}>
+                    <Container>
+                        <List selection >
+                            {
+                                (listOfDescription.length > 0)
+                                && listOfDescription.map((item) => (
+                                    <List.Item key={item.key} onClick={() => { setCurrentStep(parseInt(item.key)); setPartOfDescription(item.value); }}>
+                                        <Grid columns={2} style={{ 'gridColumnGap': '0' }} >
+                                            <Grid.Row>
+                                                <GridColumn width={1} textAlign='right' verticalAlign='middle'>
+                                                    <Label circular style={{ verticalAlign: 'baseline', color: '#615f5f', backgroundColor: 'white' }}>{item.key}</Label>
+                                                </GridColumn>
+                                                <GridColumn width={14} style={{ 'paddingLeft': '1px' }}>
+                                                    <Label size='large' pointing={'left'} style={{ 'whiteSpace': 'pre-wrap', 'wordBreak': 'break-word', color: '#615f5f', backgroundColor: 'white' }}>{item.value}</Label>
+                                                </GridColumn>
+                                            </Grid.Row>
+                                        </Grid>
+                                    </List.Item>
+                                ))
+                            }
+                        </List>
+                    </Container>
+                </Container>
+            }
+
+
+
             <Grid>
                 <Grid.Column textAlign="center">
-                    <Button type='submit' primary>Submit</Button>
+                    <Button
+                        type='submit'
+                        primary
+                        onClick={handleSubmit}
+                        className={(newTitle && parseInt(newPortions) > 0 && parseInt(newDuration) > 0 && newImageName && parseInt(newDifficulty) >= 0 && listOfDescription.length && insertedIngredients.length > 0 && listOfDescription.length > 0) ? '' : 'disabled'}
+                    >Submit</Button>
                 </Grid.Column>
             </Grid>
-        </Form>
+        </Form >
     )
 }

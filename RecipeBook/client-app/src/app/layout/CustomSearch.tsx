@@ -1,5 +1,6 @@
 import axios from 'axios';
 import _ from 'lodash'
+import { title } from 'process';
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { Grid, Search } from "semantic-ui-react";
 import { Recipe } from '../models/recipe';
@@ -32,7 +33,12 @@ export default function CustomSearch() {
     useEffect(() => {
         axios.get<Recipe[]>('http://localhost:5118/Recipe/GetAllRecipes')
             .then(response => {
-                setRecipes(response.data);
+                let newResponse = response.data.map(function (item) {
+                    item.description = ''; //Must be delete
+                    return item;
+                });
+                
+                setRecipes(newResponse);
             })
     }, [])
 
@@ -41,6 +47,7 @@ export default function CustomSearch() {
 
     const timeoutRef = useRef();
     const handleSearchChange = useCallback((e: any, data: { value?: any; }) => {
+        
         clearTimeout(timeoutRef.current)
         dispatch({
             type: 'START_SEARCH',
