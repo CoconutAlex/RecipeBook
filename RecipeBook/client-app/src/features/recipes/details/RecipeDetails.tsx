@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { Container, Divider, Grid, GridColumn, Icon, Label, List } from 'semantic-ui-react';
+import { NavLink, useLocation } from 'react-router-dom';
+import { Button, Container, Divider, Grid, GridColumn, GridRow, Icon, Label, List } from 'semantic-ui-react';
 import { Difficulty, Ingredient } from '../../../app/models/recipe';
 
 export interface DescriptionItem {
@@ -34,7 +34,7 @@ export default function RecipeDetails() {
             <Container textAlign='right'>
                 <div><Icon name='users' /> {` Portions: ${props.portions} `}</div>
                 <div><Icon name='wait' /> {` Duration: ${props.duration}' `} </div>
-                <div><Icon name='chart bar outline' /> {`Difficulty: ${Difficulty[props.difficulty]} `}</div>
+                <div><Icon name='chart bar outline' /> {`Difficulty: ${Difficulty[props.difficulty].replace(/([A-Z])/g, ' $1').trim()} `}</div>
             </Container>
             <Container textAlign='center' >
                 <b>{props.title}</b>
@@ -54,7 +54,7 @@ export default function RecipeDetails() {
                                     ? props.ingredientList.map((item: Ingredient) => (
                                         <List.Item key={item.id}>
                                             <Label as='a' color='blue' size='medium' tag>
-                                                {item.ingredientName.name}
+                                                {item.ingredientQuantity.quantity} {item.ingredientName.name}
                                             </Label>
                                         </List.Item>
                                     ))
@@ -64,7 +64,7 @@ export default function RecipeDetails() {
                     }
                 </Container>
             </Container>
-            <Container textAlign='justified'>
+            {/* <Container textAlign='justified'>
                 <Divider />
                 {
                     (listOfDescription.length > 0) ? <Label size='medium'>Let's Cook...</Label> : ''
@@ -94,7 +94,45 @@ export default function RecipeDetails() {
                         </List>
                     </Container>
                 </Container>
-            </Container>
+            </Container> */}
+            <Grid>
+                <Grid.Row></Grid.Row>
+                <Grid.Row>
+                    <Container >
+                        {
+                            (listOfDescription.length > 0) &&
+                            <>
+                                <Container textAlign='center'>
+                                    <label style={{ fontWeight: 'bold', textAlign: 'center' }}>Let's Cook...</label>
+                                </Container>
+                                <Container className='segment' style={{ background: 'transparent' }}>
+                                    <Container>
+                                        <List >
+                                            {
+                                                (listOfDescription.length > 0)
+                                                && listOfDescription.map((item) => (
+                                                    <List.Item key={item.key}>
+                                                        <Grid columns={2} style={{ 'gridColumnGap': '0' }} >
+                                                            <Grid.Row>
+                                                                <GridColumn width={1} textAlign='right' verticalAlign='middle'>
+                                                                    <Label circular style={{ verticalAlign: 'baseline', color: '#615f5f', backgroundColor: 'white' }}>{item.key}</Label>
+                                                                </GridColumn>
+                                                                <GridColumn width={14} style={{ 'paddingLeft': '1px' }}>
+                                                                    <Label size='large' pointing={'left'} style={{ 'whiteSpace': 'pre-wrap', 'wordBreak': 'break-word', color: '#615f5f', backgroundColor: 'white' }}>{item.value}</Label>
+                                                                </GridColumn>
+                                                            </Grid.Row>
+                                                        </Grid>
+                                                    </List.Item>
+                                                ))
+                                            }
+                                        </List>
+                                    </Container>
+                                </Container>
+                            </>
+                        }
+                    </Container>
+                </Grid.Row>
+            </Grid>
         </div >
     )
 }

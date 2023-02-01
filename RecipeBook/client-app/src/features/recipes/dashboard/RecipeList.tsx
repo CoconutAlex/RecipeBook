@@ -48,7 +48,6 @@ export default function RecipeList({ recipesList }: Props) {
                 {recipes.map((recipe) => (
                     <Item key={recipe.id}>
                         <Item.Image size='small' src={`/assets/recipesImages/${recipe.imageName}.png`}
-                            className={`btn ${loading[recipe.id as keyof {}] ? 'loading' : ''}`}
                             as={NavLink} to='/details'
                             state={{
                                 props: {
@@ -69,7 +68,7 @@ export default function RecipeList({ recipesList }: Props) {
                             <Item.Description>
                                 <div><Icon name='users' /> {` Portions: ${recipe.portions} `}</div>
                                 <div><Icon name='wait' /> {` Duration: ${recipe.duration}' `} </div>
-                                <div><Icon name='chart bar outline' /> {`Difficulty: ${Difficulty[recipe.difficulty]} `}</div>
+                                <div><Icon name='chart bar outline' /> {`Difficulty: ${Difficulty[recipe.difficulty].replace(/([A-Z])/g, ' $1').trim()} `}</div>
                             </Item.Description>
                             <Item.Extra>
                                 <Button

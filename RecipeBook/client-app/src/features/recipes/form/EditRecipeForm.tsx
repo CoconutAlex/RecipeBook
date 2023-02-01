@@ -6,6 +6,7 @@ import { Difficulty, IngredientName, IngredientQuantity } from '../../../app/mod
 import RecipeDashboard from '../dashboard/RecipeDashboard';
 
 export interface DropdownList {
+    id: string,
     key: string,
     text: string,
     value: string
@@ -13,7 +14,9 @@ export interface DropdownList {
 
 export interface IngredientItem {
     key: string,
-    value: string
+    value: string,
+    quantityid: string,
+    nameid: string
 }
 
 export interface DescriptionItem {
@@ -56,7 +59,7 @@ export default function EditRecipeForm() {
     function getIngredientsQuantity() {
         quantities = [];
         ingredientsQuantity.map((quantity) => (
-            quantities.push({ key: quantity.id, text: quantity.quantity, value: quantity.quantity })
+            quantities.push({ key: quantity.id, text: quantity.quantity, value: quantity.quantity, id: quantity.id })
         ))
 
         return quantities;
@@ -66,7 +69,7 @@ export default function EditRecipeForm() {
     function getIngredientsName() {
         names = [];
         ingredientsName.forEach(name => {
-            names.push({ key: name.id, text: name.name, value: name.name });
+            names.push({ key: name.id, text: name.name, value: name.name, id: name.id });
         });
 
         return names;
@@ -90,9 +93,10 @@ export default function EditRecipeForm() {
 
     function getDefaultList() {
         var defaultList: any = [];
+
         props.ingredientList.forEach((item: any) => {
-            let uniqueKey = (Math.random() + 1).toString(36).substring(2);
-            defaultList.push({ key: uniqueKey, value: `${item.ingredientQuantity.quantity} ${item.ingredientName.name}` });
+            let uniqueKey = item.ingredientQuantity.id + '-' + item.ingredientName.id;
+            defaultList.push({ key: uniqueKey, value: `${item.ingredientQuantity.quantity} ${item.ingredientName.name}`, quantityid: item.ingredientQuantity.id, nameid: item.ingredientName.id });
         });
 
         return defaultList;
@@ -106,10 +110,10 @@ export default function EditRecipeForm() {
     };
 
     var [insertedIngredients, setinsertedIngredients] = useState<IngredientItem[]>(getDefaultList());
-    const addIngredient = (quantity: string, name: string) => {
+    const addIngredient = (quantity: string, quantityId: string, name: string, nameId: string) => {
         const newIngredients = [...insertedIngredients];
-        let uniqueKey = (Math.random() + 1).toString(36).substring(2);
-        newIngredients.push({ key: uniqueKey, value: `${quantity} ${name}` });
+        let uniqueKey = quantityId + '-' + nameId;
+        newIngredients.push({ key: uniqueKey, value: `${quantity} ${name}`, quantityid: quantityId, nameid: nameId });
         setinsertedIngredients(newIngredients);
     };
 
@@ -191,10 +195,11 @@ export default function EditRecipeForm() {
             setListOfDescriptions(newListOfDescriptions);
             if (step - 1 <= 0) {
                 setCurrentStep(1);
+                setPartOfDescription(listOfDescription.length > 1 ? listOfDescription[1].value : '');
             } else {
                 setCurrentStep(step - 1);
+                setPartOfDescription(listOfDescription[step - 2].value);
             }
-            setPartOfDescription('');
         }
     };
 
@@ -217,6 +222,15 @@ export default function EditRecipeForm() {
         listOfDescription.forEach(item => {
             finalDescription += `${item.value}\n\n `;
         })
+
+        var finalIngredientslist = [] as any;
+        insertedIngredients.forEach(item => {
+            finalIngredientslist.push({
+                ingredientQuantityId: item.quantityid,
+                ingredientNameId: item.nameid
+            });
+        });
+
         const request = {
             title: newTitle,
             portions: parseInt(newPortions),
@@ -224,10 +238,7 @@ export default function EditRecipeForm() {
             imageName: newImageName,
             difficulty: parseInt(newDifficulty),
             steps: listOfDescription.length,
-            ingredients:
-                [
-
-                ],
+            ingredients: finalIngredientslist,
             description: finalDescription
         }
 
@@ -323,7 +334,7 @@ export default function EditRecipeForm() {
                         <Button
                             positive
                             className={(selectedQuantity && selectedName) ? '' : 'disabled'}
-                            onClick={() => addIngredient((selectedQuantity) ? selectedQuantity.quantity : '', (selectedName) ? selectedName.name : '')}>
+                            onClick={() => addIngredient((selectedQuantity) ? selectedQuantity.quantity : '', (selectedQuantity) ? selectedQuantity.id : '', (selectedName) ? selectedName.name : '', (selectedName) ? selectedName.id : '')}>
                             <div><Icon name='check' /></div>
                         </Button>
                         {
@@ -345,7 +356,7 @@ export default function EditRecipeForm() {
                         {
                             (insertedIngredients.length)
                                 ? insertedIngredients.map((item) => (
-                                    <List.Item key={item.key}>
+                                    <List.Item key={item.key} quantityid={item.quantityid} nameid={item.nameid}>
                                         <Label as='a' color='blue' size='medium'>
                                             {item.value}
                                             <Icon name='close' id='mini-trash' color='black' onClick={() => removeIngredient(item)} />
@@ -379,30 +390,34 @@ export default function EditRecipeForm() {
 
             {
                 (listOfDescription.length > 0) &&
-                <label style={{ fontWeight: 'bold' }}>Description</label> &&
-                <Container textAlign='justified' className='segment' style={{ marginBottom: '20px', border: '1px solid black', background: 'transparent' }}>
+                <>
                     <Container>
-                        <List selection >
-                            {
-                                (listOfDescription.length > 0)
-                                && listOfDescription.map((item) => (
-                                    <List.Item key={item.key} onClick={() => { setCurrentStep(parseInt(item.key)); setPartOfDescription(item.value); }}>
-                                        <Grid columns={2} style={{ 'gridColumnGap': '0' }} >
-                                            <Grid.Row >
-                                                <GridColumn width={1} textAlign='right' verticalAlign='middle'>
-                                                    <Label circular style={{ verticalAlign: 'baseline', color: '#615f5f', backgroundColor: 'white' }}>{item.key}</Label>
-                                                </GridColumn>
-                                                <GridColumn width={14} style={{ 'paddingLeft': '1px' }}>
-                                                    <Label size='large' pointing={'left'} style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', color: '#615f5f', backgroundColor: 'white' }}>{item.value}</Label>
-                                                </GridColumn>
-                                            </Grid.Row>
-                                        </Grid>
-                                    </List.Item>
-                                ))
-                            }
-                        </List>
+                        <label style={{ fontWeight: 'bold' }}>Description</label>
                     </Container>
-                </Container>
+                    <Container className='segment' style={{ background: 'transparent' }}>
+                        <Container>
+                            <List selection >
+                                {
+                                    (listOfDescription.length > 0)
+                                    && listOfDescription.map((item) => (
+                                        <List.Item key={item.key} onClick={() => { setCurrentStep(parseInt(item.key)); setPartOfDescription(item.value); }}>
+                                            <Grid columns={2} style={{ 'gridColumnGap': '0' }} >
+                                                <Grid.Row >
+                                                    <GridColumn width={1} textAlign='right' verticalAlign='middle'>
+                                                        <Label circular style={{ verticalAlign: 'baseline', color: '#615f5f', backgroundColor: 'white' }}>{item.key}</Label>
+                                                    </GridColumn>
+                                                    <GridColumn width={14} style={{ 'paddingLeft': '1px' }}>
+                                                        <Label size='large' pointing={'left'} style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', color: '#615f5f', backgroundColor: 'white' }}>{item.value}</Label>
+                                                    </GridColumn>
+                                                </Grid.Row>
+                                            </Grid>
+                                        </List.Item>
+                                    ))
+                                }
+                            </List>
+                        </Container>
+                    </Container>
+                </>
             }
 
             <Grid>
