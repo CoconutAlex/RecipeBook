@@ -8,7 +8,7 @@ using RecipeBook.Data;
 
 #nullable disable
 
-namespace RecipeBook.Migrations
+namespace Serverapp.Migrations
 {
     [DbContext(typeof(DataBaseContext))]
     partial class DataBaseContextModelSnapshot : ModelSnapshot

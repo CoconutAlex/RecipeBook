@@ -27,42 +27,50 @@ namespace RecipeBook.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllRecipes()
         {
-            var recipesDto = new List<Models.Dto.Recipe>();
-
-            var response = await repository.GetAllRecipes_Repos();
-            response.ToList().ForEach(recipe =>
+            try
             {
-                var recipeDto = new Models.Dto.Recipe()
+                var recipesDto = new List<Models.Dto.Recipe>();
+
+                var response = await repository.GetAllRecipes_Repos();
+                response.ToList().ForEach(recipe =>
                 {
-                    Id = recipe.Id,
-                    Title = recipe.Title,
-                    Description = recipe.Description,
-                    Steps = recipe.Steps,
-                    Portions = recipe.Portions,
-                    Duration = recipe.Duration,
-                    Difficulty = recipe.Difficulty,
-                    ImageName = recipe.ImageName,
-                    Ingredients = recipe.Ingredients.Select(
-                         q => new Models.Dto.Ingredient()
-                         {
-                             Id = q.Id,
-                             IngredientName = new Models.Dto.IngredientName()
+                    var recipeDto = new Models.Dto.Recipe()
+                    {
+                        Id = recipe.Id,
+                        Title = recipe.Title,
+                        Description = recipe.Description,
+                        Steps = recipe.Steps,
+                        Portions = recipe.Portions,
+                        Duration = recipe.Duration,
+                        Difficulty = recipe.Difficulty,
+                        ImageName = recipe.ImageName,
+                        Ingredients = recipe.Ingredients.Select(
+                             q => new Models.Dto.Ingredient()
                              {
-                                 Id = q.IngredientName.Id,
-                                 Name = q.IngredientName.Name
-                             },
-                             IngredientQuantity = new Models.Dto.IngredientQuantity()
-                             {
-                                 Id = q.IngredientQuantity.Id,
-                                 Quantity = q.IngredientQuantity.Quantity
-                             }
-                         }).ToList()
-                };
+                                 Id = q.Id,
+                                 IngredientName = new Models.Dto.IngredientName()
+                                 {
+                                     Id = q.IngredientName.Id,
+                                     Name = q.IngredientName.Name
+                                 },
+                                 IngredientQuantity = new Models.Dto.IngredientQuantity()
+                                 {
+                                     Id = q.IngredientQuantity.Id,
+                                     Quantity = q.IngredientQuantity.Quantity
+                                 }
+                             }).ToList()
+                    };
 
-                recipesDto.Add(recipeDto);
-            });
+                    recipesDto.Add(recipeDto);
+                });
 
-            return Ok(recipesDto);
+                return Ok(recipesDto);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("{0} Exception caught.", e);
+                return null;
+            }
         }
 
         #endregion
@@ -73,37 +81,45 @@ namespace RecipeBook.Controllers
         [Route("{id:guid}")]
         public async Task<IActionResult> GetRecipe(Guid id)
         {
-            var response = await repository.GetRecipe_Repos(id);
-            if (response == null) return NotFound();
-
-            var recipeDto = new Models.Dto.Recipe()
+            try
             {
-                Id = response.Id,
-                Title = response.Title,
-                Description = response.Description,
-                Steps = response.Steps,
-                Portions = response.Portions,
-                Duration = response.Duration,
-                Difficulty = response.Difficulty,
-                ImageName = response.ImageName,
-                Ingredients = response.Ingredients.Select(
-                         q => new Models.Dto.Ingredient()
-                         {
-                             Id = q.Id,
-                             IngredientName = new Models.Dto.IngredientName()
-                             {
-                                 Id = q.IngredientName.Id,
-                                 Name = q.IngredientName.Name
-                             },
-                             IngredientQuantity = new Models.Dto.IngredientQuantity()
-                             {
-                                 Id = q.IngredientQuantity.Id,
-                                 Quantity = q.IngredientQuantity.Quantity
-                             }
-                         }).ToList()
-            };
+                var response = await repository.GetRecipe_Repos(id);
+                if (response == null) return NotFound();
 
-            return Ok(recipeDto);
+                var recipeDto = new Models.Dto.Recipe()
+                {
+                    Id = response.Id,
+                    Title = response.Title,
+                    Description = response.Description,
+                    Steps = response.Steps,
+                    Portions = response.Portions,
+                    Duration = response.Duration,
+                    Difficulty = response.Difficulty,
+                    ImageName = response.ImageName,
+                    Ingredients = response.Ingredients.Select(
+                             q => new Models.Dto.Ingredient()
+                             {
+                                 Id = q.Id,
+                                 IngredientName = new Models.Dto.IngredientName()
+                                 {
+                                     Id = q.IngredientName.Id,
+                                     Name = q.IngredientName.Name
+                                 },
+                                 IngredientQuantity = new Models.Dto.IngredientQuantity()
+                                 {
+                                     Id = q.IngredientQuantity.Id,
+                                     Quantity = q.IngredientQuantity.Quantity
+                                 }
+                             }).ToList()
+                };
+
+                return Ok(recipeDto);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("{0} Exception caught.", e);
+                return null;
+            }
         }
 
         #endregion
@@ -113,36 +129,45 @@ namespace RecipeBook.Controllers
         [HttpPost]
         public async Task<IActionResult> AddRecipe(Models.Dto.Requests.Recipe.AddUpdateRecipeRequest addRecipeRequest)
         {
-            var request = new Models.Domain.Requests.Recipe.AddUpdateRecipeRequest()
+            try
             {
-                Title = addRecipeRequest.Title,
-                Description = addRecipeRequest.Description,
-                Steps = addRecipeRequest.Steps,
-                Portions = addRecipeRequest.Portions,
-                Duration = addRecipeRequest.Duration,
-                Difficulty = addRecipeRequest.Difficulty,
-                ImageName = addRecipeRequest.ImageName,
-                Ingredients = addRecipeRequest.Ingredients.Select(
+                var request = new Models.Domain.Requests.Recipe.AddUpdateRecipeRequest()
+                {
+                    Title = addRecipeRequest.Title,
+                    Description = addRecipeRequest.Description,
+                    Steps = addRecipeRequest.Steps,
+                    Portions = addRecipeRequest.Portions,
+                    Duration = addRecipeRequest.Duration,
+                    Difficulty = addRecipeRequest.Difficulty,
+                    ImageName = addRecipeRequest.ImageName,
+                    Ingredients = addRecipeRequest.Ingredients.Select(
                          q => new Models.Domain.Requests.Recipe.AddIngredientForRecipeRequest()
                          {
-                             IngredientId = q.IngredientId
+                             IngredientQuantityId = q.IngredientQuantityId,
+                             IngredientNameId = q.IngredientNameId
                          }).ToList()
-            };
+                };
 
-            var response = await repository.AddRecipe_Repos(request);
-            var responseDto = new Models.Dto.Recipe()
+                var response = await repository.AddRecipe_Repos(request);
+                var responseDto = new Models.Dto.Recipe()
+                {
+                    Id = response.Id,
+                    Title = response.Title,
+                    Description = response.Description,
+                    Steps = response.Steps,
+                    Portions = response.Portions,
+                    Duration = response.Duration,
+                    Difficulty = response.Difficulty,
+                    ImageName = response.ImageName
+                };
+
+                return Ok(responseDto);
+            }
+            catch (Exception e)
             {
-                Id = response.Id,
-                Title = response.Title,
-                Description = response.Description,
-                Steps = response.Steps,
-                Portions = response.Portions,
-                Duration = response.Duration,
-                Difficulty = response.Difficulty,
-                ImageName = response.ImageName
-            };
-
-            return Ok(responseDto);
+                Console.WriteLine("{0} Exception caught.", e);
+                return null;
+            }
         }
 
         #endregion
@@ -153,35 +178,43 @@ namespace RecipeBook.Controllers
         [Route("{id:guid}")]
         public async Task<IActionResult> DeleteRecipe(Guid id)
         {
-            var response = await repository.DeleteRecipe_Repos(id);
-            var recipeDto = new Models.Dto.Recipe()
+            try
             {
-                Id = response.Id,
-                Title = response.Title,
-                Description = response.Description,
-                Steps = response.Steps,
-                Portions = response.Portions,
-                Duration = response.Duration,
-                Difficulty = response.Difficulty,
-                ImageName = response.ImageName,
-                Ingredients = response.Ingredients.Select(
-                         q => new Models.Dto.Ingredient()
-                         {
-                             Id = q.Id,
-                             IngredientName = new Models.Dto.IngredientName()
+                var response = await repository.DeleteRecipe_Repos(id);
+                var recipeDto = new Models.Dto.Recipe()
+                {
+                    Id = response.Id,
+                    Title = response.Title,
+                    Description = response.Description,
+                    Steps = response.Steps,
+                    Portions = response.Portions,
+                    Duration = response.Duration,
+                    Difficulty = response.Difficulty,
+                    ImageName = response.ImageName,
+                    Ingredients = response.Ingredients.Select(
+                             q => new Models.Dto.Ingredient()
                              {
-                                 Id = q.IngredientName.Id,
-                                 Name = q.IngredientName.Name
-                             },
-                             IngredientQuantity = new Models.Dto.IngredientQuantity()
-                             {
-                                 Id = q.IngredientQuantity.Id,
-                                 Quantity = q.IngredientQuantity.Quantity
-                             }
-                         }).ToList()
-            };
+                                 Id = q.Id,
+                                 IngredientName = new Models.Dto.IngredientName()
+                                 {
+                                     Id = q.IngredientName.Id,
+                                     Name = q.IngredientName.Name
+                                 },
+                                 IngredientQuantity = new Models.Dto.IngredientQuantity()
+                                 {
+                                     Id = q.IngredientQuantity.Id,
+                                     Quantity = q.IngredientQuantity.Quantity
+                                 }
+                             }).ToList()
+                };
 
-            return Ok(recipeDto);
+                return Ok(recipeDto);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("{0} Exception caught.", e);
+                return null;
+            }
         }
 
         #endregion
@@ -192,56 +225,65 @@ namespace RecipeBook.Controllers
         [Route("{id:guid}")]
         public async Task<IActionResult> UpdateRecipe([FromRoute] Guid id, [FromBody] Models.Dto.Requests.Recipe.AddUpdateRecipeRequest updateRecipeRequest)
         {
-            var request = new Models.Domain.Requests.Recipe.AddUpdateRecipeRequest()
+            try
             {
-                Title = updateRecipeRequest.Title,
-                Description = updateRecipeRequest.Description,
-                Steps = updateRecipeRequest.Steps,
-                Portions = updateRecipeRequest.Portions,
-                Duration = updateRecipeRequest.Duration,
-                Difficulty = updateRecipeRequest.Difficulty,
-                ImageName = updateRecipeRequest.ImageName,
-                Ingredients = updateRecipeRequest.Ingredients.Select(
+                var request = new Models.Domain.Requests.Recipe.AddUpdateRecipeRequest()
+                {
+                    Title = updateRecipeRequest.Title,
+                    Description = updateRecipeRequest.Description,
+                    Steps = updateRecipeRequest.Steps,
+                    Portions = updateRecipeRequest.Portions,
+                    Duration = updateRecipeRequest.Duration,
+                    Difficulty = updateRecipeRequest.Difficulty,
+                    ImageName = updateRecipeRequest.ImageName,
+                    Ingredients = updateRecipeRequest.Ingredients.Select(
                          q => new Models.Domain.Requests.Recipe.AddIngredientForRecipeRequest()
                          {
-                             IngredientId = q.IngredientId
+                             IngredientQuantityId = q.IngredientQuantityId,
+                             IngredientNameId = q.IngredientNameId
                          }).ToList()
-            };
+                };
 
-            var response = await repository.UpdateRecipe_Repos(id, request);
-            if (response == null)
-            {
-                return NotFound();
+                var response = await repository.UpdateRecipe_Repos(id, request);
+                if (response == null)
+                {
+                    return NotFound();
+                }
+
+                var recipeDto = new Models.Dto.Recipe()
+                {
+                    Id = response.Id,
+                    Title = response.Title,
+                    Description = response.Description,
+                    Steps = response.Steps,
+                    Portions = response.Portions,
+                    Duration = response.Duration,
+                    Difficulty = response.Difficulty,
+                    ImageName = response.ImageName,
+                    Ingredients = response.Ingredients.Select(
+                             q => new Models.Dto.Ingredient()
+                             {
+                                 Id = q.Id,
+                                 IngredientName = new Models.Dto.IngredientName()
+                                 {
+                                     Id = q.IngredientName.Id,
+                                     Name = q.IngredientName.Name
+                                 },
+                                 IngredientQuantity = new Models.Dto.IngredientQuantity()
+                                 {
+                                     Id = q.IngredientQuantity.Id,
+                                     Quantity = q.IngredientQuantity.Quantity
+                                 }
+                             }).ToList()
+                };
+
+                return Ok(recipeDto);
             }
-
-            var recipeDto = new Models.Dto.Recipe()
+            catch (Exception e)
             {
-                Id = response.Id,
-                Title = response.Title,
-                Description = response.Description,
-                Steps = response.Steps,
-                Portions = response.Portions,
-                Duration = response.Duration,
-                Difficulty = response.Difficulty,
-                ImageName = response.ImageName,
-                Ingredients = response.Ingredients.Select(
-                         q => new Models.Dto.Ingredient()
-                         {
-                             Id = q.Id,
-                             IngredientName = new Models.Dto.IngredientName()
-                             {
-                                 Id = q.IngredientName.Id,
-                                 Name = q.IngredientName.Name
-                             },
-                             IngredientQuantity = new Models.Dto.IngredientQuantity()
-                             {
-                                 Id = q.IngredientQuantity.Id,
-                                 Quantity = q.IngredientQuantity.Quantity
-                             }
-                         }).ToList()
-            };
-
-            return Ok(recipeDto);
+                Console.WriteLine("{0} Exception caught.", e);
+                return null;
+            }
         }
 
         #endregion

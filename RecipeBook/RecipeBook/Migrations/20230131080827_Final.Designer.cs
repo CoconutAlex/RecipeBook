@@ -12,8 +12,8 @@ using RecipeBook.Data;
 namespace Serverapp.Migrations
 {
     [DbContext(typeof(DataBaseContext))]
-    [Migration("20221223101309_AddRecepeImageMigration")]
-    partial class AddRecepeImageMigration
+    [Migration("20230131080827_Final")]
+    partial class Final
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

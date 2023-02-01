@@ -2,6 +2,7 @@
 {
     public class AddIngredientForRecipeRequest
     {
-        public Guid IngredientId { get; set; }
+        public Guid IngredientQuantityId { get; set; }
+        public Guid IngredientNameId { get; set; }
     }
 }
