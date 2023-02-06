@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { isEmpty } from 'lodash';
 import { SetStateAction, useEffect, useState } from 'react';
 import { Button, Container, Form, Grid, GridColumn, Icon, Input, Label, List, Select, TextArea } from 'semantic-ui-react'
 import { Difficulty, IngredientName, IngredientQuantity } from '../../../app/models/recipe';
@@ -118,7 +119,6 @@ export default function NewRecipeForm() {
 
     function handleSelectedIngredientQuantity(e: any, data: any) {
         var selectedId = '';
-
         ingredientsQuantity.every((item) => {
             if (item.quantity === data.value) {
                 selectedId = item.id;
@@ -127,26 +127,16 @@ export default function NewRecipeForm() {
             return true;
         });
 
-        setSelectedQuantity({ id: selectedId, quantity: data.value });
-    };
-
-    function handleSelectedIngredientQuantityTest(value: any) {
-        var selectedId = '';
-
-        ingredientsQuantity.every((item) => {
-            if (item.quantity === value) {
-                selectedId = item.id;
-                return false;
-            }
-            return true;
-        });
-
-        setSelectedQuantity({ id: selectedId, quantity: value });
+        if (isEmpty(selectedId)) {
+            var withoutSpaces = data.value.split(" ").join("");
+            setSelectedQuantity({ id: generateGUID(), quantity: withoutSpaces });
+        } else {
+            setSelectedQuantity({ id: selectedId, quantity: data.value });
+        }
     };
 
     function handleSelectedIngredientName(e: any, data: any) {
         var selectedId = '';
-
         ingredientsName.every((item) => {
             if (item.name === data.value) {
                 selectedId = item.id;
@@ -155,8 +145,19 @@ export default function NewRecipeForm() {
             return true;
         });
 
-        setSelectedName({ id: selectedId, name: data.value });
+        if (isEmpty(selectedId)) {
+            setSelectedName({ id: generateGUID(), name: data.value });
+        } else {
+            setSelectedName({ id: selectedId, name: data.value });
+        }
     };
+
+    function generateGUID() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
 
     const [currentStep, setCurrentStep] = useState<number>(1);
 
@@ -204,6 +205,7 @@ export default function NewRecipeForm() {
     const [newDifficulty, setNewDifficulty] = useState('');
 
     const handleSubmit = () => {
+
         var finalDescription = '';
         listOfDescription.forEach(item => {
             finalDescription += `${item.value}\n\n `;
@@ -213,7 +215,9 @@ export default function NewRecipeForm() {
         insertedIngredients.forEach(item => {
             finalIngredientslist.push({
                 ingredientQuantityId: item.quantityid,
-                ingredientNameId: item.nameid
+                ingredientQuantity: item.value.split(' ')[0],
+                ingredientNameId: item.nameid,
+                ingredientName: item.value.split(' ').slice(1, item.value.split(' ').length).join(' ')
             });
         });
 
@@ -242,16 +246,6 @@ export default function NewRecipeForm() {
             event.preventDefault();
         }
     }
-
-    const handleSearch = (e: any, { searchQuery }: any) => {
-        debugger;
-    }
-
-    const options = [
-        { key: '1', text: 'Option 1', value: '1' },
-        { key: '2', text: 'Option 2', value: '2' },
-        { key: '3', text: 'Option 3', value: '3' },
-    ];
 
     return (
         <Form autoComplete="off" onKeyPress={handleKeyPress}>
@@ -336,6 +330,20 @@ export default function NewRecipeForm() {
                     </Grid.Column>
                 </Grid>
             </Form.Group>
+            {/* <Form.Group>
+                <Form.Field
+                    width='4'
+                    control={Input}
+                    placeholder='New Ingredient Quantity'
+                    onChange={handleSelectedIngredientQuantity}
+                />
+                <Form.Field
+                    width='4'
+                    control={Input}
+                    placeholder='New Ingredient Name'
+                    onChange={handleSelectedIngredientName}
+                />
+            </Form.Group> */}
             <Form.Field id='form-input-control-ingredients'>
                 <label>Ingredients List</label>
                 {
@@ -416,9 +424,6 @@ export default function NewRecipeForm() {
                     >Submit</Button>
                 </Grid.Column>
             </Grid>
-
-            <CustomFormField options={options} placeholder='Ingredient Quantity' change={handleSelectedIngredientQuantityTest} />
-
         </Form >
     )
 }

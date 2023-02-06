@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { isEmpty } from 'lodash';
 import { SetStateAction, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Button, Container, Form, Grid, GridColumn, Icon, Input, Label, List, Select } from 'semantic-ui-react'
@@ -132,7 +133,6 @@ export default function EditRecipeForm() {
 
     function handleSelectedIngredientQuantity(e: any, data: any) {
         var selectedId = '';
-
         ingredientsQuantity.every((item) => {
             if (item.quantity === data.value) {
                 selectedId = item.id;
@@ -141,7 +141,12 @@ export default function EditRecipeForm() {
             return true;
         });
 
-        setSelectedQuantity({ id: selectedId, quantity: data.value });
+        if (isEmpty(selectedId)) {
+            var withoutSpaces = data.value.split(" ").join("");
+            setSelectedQuantity({ id: generateGUID(), quantity: withoutSpaces });
+        } else {
+            setSelectedQuantity({ id: selectedId, quantity: data.value });
+        }
     };
 
     function handleSelectedIngredientName(e: any, data: any) {
@@ -155,8 +160,19 @@ export default function EditRecipeForm() {
             return true;
         });
 
-        setSelectedName({ id: selectedId, name: data.value });
+        if (isEmpty(selectedId)) {
+            setSelectedName({ id: generateGUID(), name: data.value });
+        } else {
+            setSelectedName({ id: selectedId, name: data.value });
+        }
     };
+
+    function generateGUID() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
 
     var descriptionInSteps = props.description.split(/\r?\n\n/);
     var defaultListOfDescription = [];
@@ -227,7 +243,9 @@ export default function EditRecipeForm() {
         insertedIngredients.forEach(item => {
             finalIngredientslist.push({
                 ingredientQuantityId: item.quantityid,
-                ingredientNameId: item.nameid
+                ingredientQuantity: item.value.split(' ')[0],
+                ingredientNameId: item.nameid,
+                ingredientName: item.value.split(' ').slice(1, item.value.split(' ').length).join(' ')
             });
         });
 
@@ -349,6 +367,20 @@ export default function EditRecipeForm() {
                     </Grid.Column>
                 </Grid>
             </Form.Group>
+            {/* <Form.Group>
+                <Form.Field
+                    width='4'
+                    control={Input}
+                    placeholder='New Ingredient Quantity'
+                    onChange={handleSelectedIngredientQuantity}
+                />
+                <Form.Field
+                    width='4'
+                    control={Input}
+                    placeholder='New Ingredient Name'
+                    onChange={handleSelectedIngredientName}
+                />
+            </Form.Group> */}
             <Form.Field id='form-input-control-ingredients'>
                 <label>Ingredients List</label>
                 {
